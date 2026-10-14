@@ -1,4 +1,4 @@
-# Appendix A — Mathematical Formulation (in depth)
+# Appendix A: Mathematical Formulation (in depth)
 
 ## A.1 Problem setup and notation
 
@@ -22,7 +22,7 @@ $$
 $$
 the $\ell_2$-norm of the per-dimension variance of the latent velocity. It is large at cloud edges / broken cloud (rapidly changing latent) and near zero under uniform clear or overcast sky. CTI is robustly normalized by its training $90$th percentile, $\widetilde{\mathrm{CTI}}_t = \mathrm{clip}(\mathrm{CTI}_t / q_{0.9}^{\text{train}},\,0,\,10)$, giving it $O(1)$ dynamic range so it can drive the diffusion gate.
 
-## A.3 Latent neural SDE: Mixture of Ornstein–Uhlenbeck processes
+## A.3 Latent neural SDE: Mixture of Ornstein: Uhlenbeck processes
 
 We model the forecast residual $\delta k_{t+h} = k_{t+h}-k_t$ (the deviation from smart-persistence) as the marginal of a **mixture of $K$ Ornstein–Uhlenbeck (OU) processes**. A transformer encoder $g_\theta$ ingests the $L$-step history and the conditioning $(\widetilde{\mathrm{CTI}}_t, h)$ to produce a context vector $\xi_t = g_\theta(\{(z_s,k_s,c_s)\}, \widetilde{\mathrm{CTI}}_t, h)\in\mathbb{R}^{128}$. From $\xi_t$, per-component heads emit mixing weights $\pi\in\Delta^{K-1}$, means $\mu\in\mathbb{R}^K$, mean-reversion rates $\theta\in\mathbb{R}_{>0}^K$, and base volatilities $\sigma_0\in\mathbb{R}_{>0}^K$.
 
@@ -42,7 +42,7 @@ The OU process has a Gaussian marginal at any horizon $h$ in closed form. Solvin
 $$
 Y^{(k)}_h \sim \mathcal{N}\!\Big(\underbrace{\mu_k\big(1-e^{-\theta_k h}\big)}_{m_k(h)},\ \underbrace{\tfrac{\sigma_k^2}{2\theta_k}\big(1-e^{-2\theta_k h}\big)}_{v_k(h)}\Big).
 $$
-Thus the per-component predictive law for $\delta k_{t+h}$ is $\mathcal{N}(m_k(h), v_k(h))$ — **no autoregressive rollout and no path simulation are required**, which is the key computational distinction from generative video models.
+Thus the per-component predictive law for $\delta k_{t+h}$ is $\mathcal{N}(m_k(h), v_k(h))$, **no autoregressive rollout and no path simulation are required**, which is the key computational distinction from generative video models.
 
 ### Persistence-anchored blended marginal
 
@@ -64,7 +64,7 @@ with $\varphi,\Phi$ the standard normal pdf/cdf. For a mixture $\sum_k \pi_k \ma
 $$
 \mathrm{CRPS} = \sum_k \pi_k\, \mathbb{E}\,|X_k - y| \;-\; \tfrac{1}{2}\sum_{k}\sum_{l}\pi_k\pi_l\, \mathbb{E}\,|X_k - X_l|,
 $$
-where $\mathbb{E}|X_k-y| = \sigma_k\, A\!\big(\tfrac{y-\mu_k}{\sigma_k}\big)$ with $A(z)=2\varphi(z)+z(2\Phi(z)-1)$, and $\mathbb{E}|X_k - X_l| = \sqrt{\sigma_k^2+\sigma_l^2}\, A\!\big(\tfrac{\mu_k-\mu_l}{\sqrt{\sigma_k^2+\sigma_l^2}}\big)$ since $X_k-X_l\sim\mathcal{N}(\mu_k-\mu_l,\sigma_k^2+\sigma_l^2)$. Because the index set includes the persistence atom, the cross terms $\mathbb{E}|X_0-X_l|$ (persistence $\times$ OU) are present in the double sum, so the objective scores the *blended* law, not the OU mixture alone. It is **fully differentiable** through $\pi,\mu,\sigma$ and the blend weight $w$ — no sampling-based gradient estimator is needed, which is what lets the persistence-blend weight train stably.
+where $\mathbb{E}|X_k-y| = \sigma_k\, A\!\big(\tfrac{y-\mu_k}{\sigma_k}\big)$ with $A(z)=2\varphi(z)+z(2\Phi(z)-1)$, and $\mathbb{E}|X_k - X_l| = \sqrt{\sigma_k^2+\sigma_l^2}\, A\!\big(\tfrac{\mu_k-\mu_l}{\sqrt{\sigma_k^2+\sigma_l^2}}\big)$ since $X_k-X_l\sim\mathcal{N}(\mu_k-\mu_l,\sigma_k^2+\sigma_l^2)$. Because the index set includes the persistence atom, the cross terms $\mathbb{E}|X_0-X_l|$ (persistence $\times$ OU) are present in the double sum, so the objective scores the *blended* law, not the OU mixture alone. It is **fully differentiable** through $\pi,\mu,\sigma$ and the blend weight $w$, no sampling-based gradient estimator is needed, which is what lets the persistence-blend weight train stably.
 
 **Relation of the training loss to the reported metric.** Training minimizes CRPS in clear-sky-index ($\delta k$) units. Evaluation reports CRPS in PV-power (kW). Since the map $\delta k \mapsto P=(k_t+\delta k)\,C(m_{t+h},\tau_{t+h})$ is affine with a per-sample positive scale $C$, CRPS transforms pointwise as $\mathrm{CRPS}_P = C\,\mathrm{CRPS}_{\delta k}$. The two objectives therefore differ by the heteroscedastic factor $C$; we report this explicitly because the model is trained on the unit-less score and evaluated on the kW score.
 
@@ -78,7 +78,7 @@ and the calibrated interval at a test point in that cell is $[\hat\mu \mp \Phi^{
 $$
 \mathbb{P}\big(y_{\text{test}}\in [\hat\mu \mp \Phi^{-1}(1-\alpha/2)\,s_{h,q}\,\hat\sigma]\big) \ge 1-\alpha
 $$
-*conditional on the cell*, provided $n \ge \lceil (n+1)(1-\alpha)\rceil$; for cells with insufficient calibration samples (notably the high-CTI tail) the scale defaults to $1$ and the guarantee degrades gracefully to the model's nominal coverage. Crucially, the scale is a **quantile of held-out nonconformity scores — not a CRPS-minimizing search on validation** — so the reported test CRPS and coverage are computed on data untouched by calibration, avoiding metric double-dipping. We report test-set PICP at multiple nominal levels $\{0.5,0.7,0.8,0.9,0.95\}$ (Appendix B) to substantiate the coverage claim across the calibration curve, not at $90\%$ alone.
+*conditional on the cell*, provided $n \ge \lceil (n+1)(1-\alpha)\rceil$; for cells with insufficient calibration samples (notably the high-CTI tail) the scale defaults to $1$ and the guarantee degrades gracefully to the model's nominal coverage. Crucially, the scale is a **quantile of held-out nonconformity scores, not a CRPS-minimizing search on validation**: so the reported test CRPS and coverage are computed on data untouched by calibration, avoiding metric double-dipping. We report test-set PICP at multiple nominal levels $\{0.5,0.7,0.8,0.9,0.95\}$ (Appendix B) to substantiate the coverage claim across the calibration curve, not at $90\%$ alone.
 
 ## A.6 Evaluation metrics (formal)
 

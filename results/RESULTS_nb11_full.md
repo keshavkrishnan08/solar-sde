@@ -1,4 +1,4 @@
-# SolarSDE — Full Results (Notebook 11, complete run)
+# SolarSDE: Full Results (Notebook 11, complete run)
 
 Source notebook: `results_run_nb11_full.ipynb` (Kaggle T4, full dual-architecture publication run).
 Dataset: SKIPP'D, 517 days, 361 train / 78 val / 78 test (chronological, no leakage).
@@ -6,7 +6,7 @@ Target: rooftop PV power (kW), 1-min cadence. Horizons: 1, 5, 10, 15, 20, 30 min
 
 ---
 
-## 1. Main result — all-weather test (the headline)
+## 1. Main result: all-weather test (the headline)
 
 Per-horizon, SolarSDE (closed-form), on the 78-day all-weather test:
 
@@ -20,9 +20,9 @@ Per-horizon, SolarSDE (closed-form), on the 78-day all-weather test:
 | 30 | 1.32 | 3.95 | 0.839 | 0.151 |
 
 Calibrated (PICP near 0.90), sharp (low PINAW). Rollout variant similar
-(0.35/0.74/0.89/1.01/1.08/1.16; PICP 0.88–0.96).
+(0.35/0.74/0.89/1.01/1.08/1.16; PICP 0.88-0.96).
 
-## 2. Baselines — all-weather test (SolarSDE beats every one at every horizon)
+## 2. Baselines: all-weather test (SolarSDE beats every one at every horizon)
 
 CRPS @ each horizon (lower = better):
 
@@ -38,18 +38,18 @@ CRPS @ each horizon (lower = better):
 SolarSDE is the only learned model competitive with persistence; LSTM/CSDI
 degrade badly at long horizons. Skill vs persistence: +34% (h1) → +47% (h30).
 
-## 3. SkyGPT head-to-head — IDENTICAL cloudy test (Nov–Dec 2019, 5 days, 2582 windows)
+## 3. SkyGPT head-to-head: IDENTICAL cloudy test (Nov–Dec 2019, 5 days, 2582 windows)
 
 CRPS (kW) on SkyGPT's exact test set:
 
 | h (min) | SolarSDE-closedform | smart-pers | SkyGPT (pub) |
 |---|---|---|---|
-| 1  | 1.234 | 1.241 | — (SkyGPT is 15-min only) |
-| 5  | 2.194 | 2.150 | — |
-| 10 | 2.794 | 2.748 | — |
+| 1  | 1.234 | 1.241 |, (SkyGPT is 15-min only) |
+| 5  | 2.194 | 2.150 | - |
+| 10 | 2.794 | 2.748 | - |
 | **15** | **3.179** | 3.105 | **2.810** |
-| 20 | 3.496 | 3.290 | — |
-| 30 | 4.042 | 3.471 | — |
+| 20 | 3.496 | 3.290 | - |
+| 30 | 4.042 | 3.471 | - |
 
 **Head-to-head at h=15 (the only horizon SkyGPT reports):**
 
@@ -60,14 +60,14 @@ CRPS (kW) on SkyGPT's exact test set:
 | SUNSET (pub) | 3.31 | 56.95 | +9.8% |
 | SolarSDE-ensemble | 3.33 | 34.75 | −7.4% |
 | SolarSDE-rollout | 3.37 | 35.60 | −8.4% |
-| smart-persistence (pub) | 3.67 | — | 0 |
+| smart-persistence (pub) | 3.67 | - | 0 |
 
 **Verdict: SolarSDE does NOT beat SkyGPT at h=15 (3.18 vs 2.81, +13% behind).
 It beats SUNSET and the published smart-persistence. On the cloudy regime the
-model only ties our (stronger) smart-persistence — imagery does not help there.**
+model only ties our (stronger) smart-persistence, imagery does not help there.**
 Rollout and ensemble both underperformed plain closed-form on the cloudy test.
 
-## 4. Robustness — leave-one-month-out cross-validation (6 folds)
+## 4. Robustness: leave-one-month-out cross-validation (6 folds)
 
 | h (min) | CRPS (mean ± std) | PICP (mean ± std) |
 |---|---|---|
@@ -82,11 +82,11 @@ Stable across seasons; calibration holds (PICP ~0.93 through h=15).
 
 ## 5. Significance, stratification, ramps
 
-- **Stratified (h=10): SolarSDE wins 11/11 subsets** — incl. ramps (3.81 vs 4.67),
+- **Stratified (h=10): SolarSDE wins 11/11 subsets**: incl. ramps (3.81 vs 4.67),
   most-turbulent CTI quartile (2.96 vs 4.44), clear, cloudy, partial.
-- **Diebold-Mariano: p ≈ 0** — significantly beats persistence.
+- **Diebold-Mariano: p ≈ 0**: significantly beats persistence.
 - **Bootstrap CIs (B=1000)** computed at all horizons.
-- **Ramp AUROC (PI-width): 0.90–0.91** across all horizons — wide intervals
+- **Ramp AUROC (PI-width): 0.90-0.91** across all horizons: wide intervals
   correctly flag ramps.
 
 ## 6. Economic value (CAISO reserve simulation, h=10, 1 GW plant)
@@ -100,21 +100,21 @@ Stable across seasons; calibration holds (PICP ~0.93 through h=15).
 
 **Strengths (genuinely strong, paper-ready):**
 - Beats every ML/persistence baseline at every horizon on the all-weather test.
-- Calibrated (PICP ~0.90) and sharp — the property SkyGPT never even verifies.
-- Multi-horizon 1–30 min from one model; SkyGPT is 15-min only.
+- Calibrated (PICP ~0.90) and sharp: the property SkyGPT never even verifies.
+- Multi-horizon 1-30 min from one model; SkyGPT is 15-min only.
 - Robust across seasons (6-fold CV), significant (DM p≈0), 11/11 stratified.
 - Real economic value, profitable across all price scenarios.
-- 0.43M params — orders of magnitude lighter than a generative video pipeline.
+- 0.43M params: orders of magnitude lighter than a generative video pipeline.
 
 **The one weakness (report honestly):**
 - Does NOT beat SkyGPT's CRPS at h=15 on the cloudy test (3.18 vs 2.81).
-- On cloudy days the imagery does not beat smart-persistence — the pooled 64-d
+- On cloudy days the imagery does not beat smart-persistence: the pooled 64-d
   latent discards cloud spatial position/motion, which is what SkyGPT exploits.
 - Deep changes tried (rollout architecture, ensemble, motion features, cloudy
   oversampling) did NOT close the gap; post-hoc sweep confirmed even a test-tuned
   oracle stays ~13% behind. The gap is structural (latent pooling), not tuning.
 
 **Honest framing for publication:** competitive at SkyGPT's single horizon,
-uniquely calibrated and multi-horizon across the full 1–30 min operational band,
+uniquely calibrated and multi-horizon across the full 1-30 min operational band,
 at a fraction of the cost. Target Applied Energy / Solar Energy / Energy & AI
 (not AAE, SkyGPT's home journal, unless the h=15 gap closes).

@@ -1,4 +1,4 @@
-# ARCH x MOTION_GRID sweep (notebook 13) — NEGATIVE result for spatial motion
+# ARCH x MOTION_GRID sweep (notebook 13): NEGATIVE result for spatial motion
 
 SkyGPT cloudy-test CRPS (kW), h=15 = the head-to-head horizon (SkyGPT pub = 2.810):
 
@@ -23,7 +23,7 @@ SkyGPT cloudy-test CRPS (kW), h=15 = the head-to-head horizon (SkyGPT pub = 2.81
 
 ## Honest implication for the paper
 Simple optical-flow spatial proxies do not extract usable cloud-position signal
-from 64x64 frames — reinforces that closing the SkyGPT gap needs actual future-
+from 64x64 frames, reinforces that closing the SkyGPT gap needs actual future-
 frame prediction (a major rebuild), not cheap feature engineering. The drop-in
 levers are nearly exhausted; bigmix+grid1 is the last cheap thing worth trying.
 

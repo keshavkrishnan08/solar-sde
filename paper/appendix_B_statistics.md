@@ -1,11 +1,11 @@
-# Appendix B — Supplementary statistical validation
+# Appendix B: Supplementary statistical validation
 
 All results here come from a single controlled protocol: three independently seeded
 models (42/123/456) trained and evaluated on an identical SKIPP'D split, with
 **genuine quantile-based Mondrian split-conformal calibration** (Appendix A.5) fit on
 validation and every metric computed on the untouched test set in PV-power (kW) units.
-This protocol isolates the statistical *properties* — calibration validity, significance,
-and seed variance — and is internally consistent by construction; it uses a tractable
+This protocol isolates the statistical *properties*, calibration validity, significance,
+and seed variance, and is internally consistent by construction; it uses a tractable
 multi-day window so the full 3-seed × multi-method battery (including block bootstrap and
 HAC tests) is computationally feasible. The full-scale magnitudes of Section 4 are
 reproduced end-to-end by the released code.
@@ -24,7 +24,7 @@ block-bootstrap 95% CI (block length = horizon, B = 1000), and conformally calib
 | 20 | 0.452 ± 0.039 | [0.392, 0.535] | 0.920 ± 0.024 |
 | 30 | 0.538 ± 0.063 | [0.446, 0.632] | 0.898 ± 0.026 |
 
-Coverage is close to the 0.90 target at every horizon (0.89–0.92), seed variance is
+Coverage is close to the 0.90 target at every horizon (0.89-0.92), seed variance is
 small, and the bootstrap intervals are tight.
 
 ## B.2 Multi-level reliability (calibration verified across the coverage curve)
@@ -42,7 +42,7 @@ across levels is 0.024 (averaged over horizons); representative values:
 Empirical coverage tracks the diagonal across the curve (Fig. 5); the largest deviations
 are ≤0.05, concentrated at the longest horizon.
 
-## B.3 Significance: HAC Diebold–Mariano + Holm–Bonferroni
+## B.3 Significance: HAC Diebold: Mariano + Holm–Bonferroni
 **Table B.3.** HAC (Newey–West, bandwidth = *h*−1) Diebold–Mariano statistic on the CRPS
 loss differential, with the Harvey–Leybourne–Newbold small-sample factor, vs persistence
 and smart persistence; Holm–Bonferroni decision at family-wise error 0.05 across the
@@ -76,8 +76,8 @@ The PIT mean is slightly above 0.5 (≈0.55), indicating a small systematic
 *under-forecast* bias, and the KS test of uniformity is rejected. We report this honestly:
 while the **90% prediction intervals are well-calibrated** by PICP (B.1) and the reliability
 curve tracks the diagonal (B.2), the full predictive distribution carries a small positive
-bias that PIT detects at the large sample sizes available. This is a more conservative —
-and more honest — calibration assessment than the not-rejected-uniformity claims common in
+bias that PIT detects at the large sample sizes available. This is a more conservative, 
+and more honest, calibration assessment than the not-rejected-uniformity claims common in
 the literature; it identifies a concrete target (debiasing the mean) for future work.
 
 ## B.5 Ablations

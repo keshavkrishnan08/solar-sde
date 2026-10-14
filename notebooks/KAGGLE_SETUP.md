@@ -1,7 +1,7 @@
-# SolarSDE on Kaggle — Setup Guide
+# SolarSDE on Kaggle: Setup Guide
 
 Step-by-step to run the combined notebook on Kaggle's free P100 GPU (30 hrs/week).
-**No Google Drive needed** — Kaggle uses its own storage.
+**No Google Drive needed**: Kaggle uses its own storage.
 
 ---
 
@@ -12,17 +12,17 @@ Step-by-step to run the combined notebook on Kaggle's free P100 GPU (30 hrs/week
    - **Accelerator:** `GPU P100` (free tier)
    - **Persistence:** `Files only`
    - **Environment:** `Always use latest environment`
-   - **Internet:** `On` (required for GitHub pulls — must enable in your Kaggle phone-verified account)
+   - **Internet:** `On` (required for GitHub pulls: must enable in your Kaggle phone-verified account)
 
 ## 2. Load the notebook
 
-**Option A — Copy-paste (simplest):**
+**Option A, Copy-paste (simplest):**
 
 1. In your new Kaggle notebook, click **File → Import Notebook → URL**
 2. Paste: `https://github.com/keshavkrishnan08/SDE/blob/main/notebooks/06_combined_baselines_ablations_analysis.ipynb`
 3. Click **Import**
 
-**Option B — Clone the repo:**
+**Option B, Clone the repo:**
 
 Add this as the first cell:
 
@@ -39,7 +39,7 @@ Kaggle requires phone verification to enable internet in notebooks. Go to https:
 
 ## 4. Clear stale outputs (ONLY IF you've run this before)
 
-If this is your **first Kaggle run**, skip — nothing to clear.
+If this is your **first Kaggle run**, skip, nothing to clear.
 
 If you've run it before and want v2 from scratch, add this cell right after the setup cell:
 
@@ -57,7 +57,7 @@ for f in ["checkpoints/sde_best.pt", "checkpoints/sde_final.pt",
           "results/ablation_results.csv",
           "results/solar_sde_calibrated.csv"]:
     (P / f).unlink(missing_ok=True)
-print("Cleared v1 artifacts — Stage 0 will retrain with v2 architecture.")
+print("Cleared v1 artifacts - Stage 0 will retrain with v2 architecture.")
 ```
 
 Run this cell once, then comment it out for subsequent re-runs (so resume-skip works).
@@ -81,7 +81,7 @@ Click **Run All** (top-right). The notebook will:
 
 Kaggle gives you 3 ways to keep results:
 
-**A. Commit the notebook** (RECOMMENDED — don't skip)
+**A. Commit the notebook** (RECOMMENDED, don't skip)
 
 Before closing the notebook session:
 - Click **Save Version** (top-right)
@@ -105,23 +105,23 @@ Kaggle sessions time out after ~20 minutes of inactivity or 9 hours max runtime.
 
 **Before disconnect:** if you see the kernel becoming unresponsive, click **Save Version → Save & Run All**. Then close and re-open; your outputs persist.
 
-**After disconnect:** re-open the notebook, verify the outputs folder is still in `/kaggle/working/solarsde_outputs/` (Kaggle keeps working directory between runs in the same session). Re-run cells — each stage checks if its output exists and skips.
+**After disconnect:** re-open the notebook, verify the outputs folder is still in `/kaggle/working/solarsde_outputs/` (Kaggle keeps working directory between runs in the same session). Re-run cells, each stage checks if its output exists and skips.
 
 If `/kaggle/working/` was wiped (can happen after a Commit):
 - Re-run from the top
 - Fast-start will re-pull VAE + latents from GitHub
-- Stage 0 will retrain (~35 min) — OR
+- Stage 0 will retrain (~35 min): OR
 - If you previously pushed checkpoints to GitHub, pull them into `/kaggle/working/solarsde_outputs/checkpoints/` manually
 
 ## 8. Known Kaggle gotchas
 
 | Issue | Fix |
 |-------|-----|
-| `OSError: Could not connect to GitHub` | Internet not enabled — see step 3 |
+| `OSError: Could not connect to GitHub` | Internet not enabled, see step 3 |
 | Stuck at `pip install` | Kaggle's package cache is slow; give it 2-3 min |
 | `CUDA OOM` | Restart kernel, reduce `N_SAMPLES` from 50 to 25 in the notebook |
 | Permission denied writing to `/kaggle/input/` | That folder is read-only. Use `/kaggle/working/` |
-| Session killed unexpectedly | Check the blue "Session" indicator — may have been idle-killed. Commit + resume |
+| Session killed unexpectedly | Check the blue "Session" indicator, may have been idle-killed. Commit + resume |
 
 ## 9. Running Notebooks 1-5 separately (not recommended on Kaggle)
 

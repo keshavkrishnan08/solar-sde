@@ -1,4 +1,4 @@
-# Fast-iterate run — ARCH=base, MOTION_GRID=1 (notebook 12)
+# Fast-iterate run: ARCH=base, MOTION_GRID=1 (notebook 12)
 
 Best closed-form result so far. CRPS-optimal calibration fully in effect.
 
@@ -11,7 +11,7 @@ Best closed-form result so far. CRPS-optimal calibration fully in effect.
 | 15 | 0.87 | 3.21 | 0.921 | 0.177 |
 | 20 | 0.95 | 3.44 | 0.901 | 0.164 |
 | 30 | 1.08 | 3.68 | 0.893 | 0.155 |
-(Best yet — earlier closed-form h=15 was 1.03; calibration change improved sharpness.)
+(Best yet, earlier closed-form h=15 was 1.03; calibration change improved sharpness.)
 
 ## SkyGPT cloudy test (identical Nov-Dec 2019)
 | h | SolarSDE | smart-pers | skill |
@@ -33,6 +33,6 @@ Now BEATS smart-persistence at h=1/10/15 (earlier it tied/lost).
 
 ## Takeaway
 Baseline config already at 3.03 with oracle 2.886. The spatial-motion (MOTION_GRID=3)
-and bigger-head (bigmix) experiments — designed to target the cloudy gap — have NOT
+and bigger-head (bigmix) experiments, designed to target the cloudy gap, have NOT
 been run yet and now have a real shot at crossing 2.81.
 Next to try: ARCH=bigmix + MOTION_GRID=3.
