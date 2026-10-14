@@ -12,7 +12,7 @@ SolarSDE is a three-component probabilistic solar irradiance nowcasting system:
 2. **Latent Neural SDE:** Evolves cloud states forward with CTI-gated diffusion
 3. **Score-Matching Decoder (CSMID):** Maps latent trajectories to calibrated irradiance distributions
 
-The key innovation is the **Cloud Turbulence Index (CTI)** — a scalar derived from latent dynamics that gates the SDE's diffusion coefficient, so uncertainty adapts to the physical state of the sky.
+The key innovation is the **Cloud Turbulence Index (CTI)** - a scalar derived from latent dynamics that gates the SDE's diffusion coefficient, so uncertainty adapts to the physical state of the sky.
 
 ---
 
@@ -91,9 +91,9 @@ python scripts/train_pipeline.py      # requires CUDA
 
 ## Data
 
-Primary: [NREL CloudCV](https://data.openei.org/submissions/8294) — 10-second sky images + co-located irradiance from Golden, CO (Sep 5 – Dec 3, 2019). 8 days of high-quality sky imagery are currently publicly available (~2.6 GB).
+Primary: [NREL CloudCV](https://data.openei.org/submissions/8294) - 10-second sky images + co-located irradiance from Golden, CO (Sep 5 – Dec 3, 2019). 8 days of high-quality sky imagery are currently publicly available (~2.6 GB).
 
-Secondary: NREL SRRL BMS — 1-minute meteorological variables (GHI, DNI, DHI, temperature, humidity, wind, pressure, cloud cover) for the full 90-day period (~177 MB).
+Secondary: NREL SRRL BMS - 1-minute meteorological variables (GHI, DNI, DHI, temperature, humidity, wind, pressure, cloud cover) for the full 90-day period (~177 MB).
 
 Notebook 1 auto-downloads both. Data files are excluded from git via `.gitignore` to keep the repo lean.
 
