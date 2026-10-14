@@ -71,3 +71,7 @@ tool-results/
 data/skippd/
 data/skygpt/
 data/surfrad/
+
+# Local tool config
+CLAUDE.md
+.claude/
