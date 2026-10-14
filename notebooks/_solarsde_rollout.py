@@ -3,7 +3,7 @@
 Where the closed-form model (notebook 09) reads a closed-form OU marginal at
 horizon h, this model *evolves the cloud-state latent forward* with a learned
 neural SDE (Euler-Maruyama) and decodes the future latent to a PV distribution, 
-the original CLAUDE.md design. This explicitly models cloud-state EVOLUTION
+the original design. This explicitly models cloud-state EVOLUTION
 (advection), the mechanism SkyGPT gets by generating future sky images, but in
 latent space (no pixel generation).
 

@@ -2763,7 +2763,7 @@ HEADER_PART3_MD = """# SolarSDE Part 3 — Evaluation & Figures (~6-8 hours with
 
 **Known limitations (documented in paper):**
 - Drift `t` parameter has training/inference semantic mismatch (target horizon vs current step) — defensible because z carries horizon info, but suboptimal. Fix needs SDE retrain.
-- VAE trained 20 epochs at 128×128 vs CLAUDE.md spec's 100 epochs at 256×256 — sufficient given dataset size.
+- VAE trained 20 epochs at 128×128 vs the original spec's 100 epochs at 256×256 — sufficient given dataset size.
 
 ## Stages
 

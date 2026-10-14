@@ -2,7 +2,7 @@
 
 Identical experiment suite to notebook 09, but the SDE marginal is produced by
 ROLLING THE LATENT FORWARD (Euler-Maruyama) and decoding the future latent, 
-the latent-rollout / cloud-state-evolution variant (original CLAUDE.md design),
+the latent-rollout / cloud-state-evolution variant (the original design),
 the method-level attempt to match SkyGPT's cloud-motion modeling.
 
 Reuses 09's whole pipeline + downstream verbatim (the rollout model is a drop-in
