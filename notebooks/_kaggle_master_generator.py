@@ -6,7 +6,7 @@ the Colab single-notebook version. Output: one downloadable zip from 08b.
   08a_master_part1_kaggle.ipynb (~9-10h):  data + VAE + main SolarSDE + 5-fold CV
   08b_master_part2_kaggle.ipynb (~6-8h):   baselines + ablations + stats + figures + tables
 
-Target journal: Solar Energy (Elsevier, IF ~6, hybrid — free traditional publishing).
+Target journal: Solar Energy (Elsevier, IF ~6, hybrid, free traditional publishing).
 """
 
 import json, sys
@@ -369,7 +369,7 @@ def nb_08a_kaggle():
         ("code", GOLDEN_RETRAIN_GUARD_CODE),
         ("code", "LATENT_DIM = 64\nIMG_SIZE = 128\n" + VAE_MODEL),
         # CloudCV download is now gated on BOTH ENABLE_GOLDEN_RETRAIN OR
-        # NEED_IMAGE_FEATURES — so even when the user has cached latents +
+        # NEED_IMAGE_FEATURES: so even when the user has cached latents +
         # ckpts (Golden retrain off), the raw images get downloaded if image
         # features are still zero-fill / missing.
         ("code", _gate("(ENABLE_GOLDEN_RETRAIN or NEED_IMAGE_FEATURES) and not all((DATA_DIR / 'cloudcv' / f).exists() "
@@ -389,7 +389,7 @@ def nb_08a_kaggle():
 
         ("markdown", "## STAGE B — Image-feature pre-flight + extraction"),
         # Fallback runs BEFORE LOAD_DATA so cov dim is consistent from the
-        # very first load — and any stale zero-fill that would mismatch an
+        # very first load: and any stale zero-fill that would mismatch an
         # existing SDE ckpt's c_dim is deleted up front.
         ("code", STAGE_M1_SAFE_FALLBACK_CODE),
         ("code", STAGE_MINUS1_CODE),

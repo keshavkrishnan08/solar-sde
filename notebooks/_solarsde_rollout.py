@@ -1,8 +1,8 @@
-"""SolarSDE-Rollout — the latent-rollout variant (notebook 10).
+"""SolarSDE-Rollout: the latent-rollout variant (notebook 10).
 
 Where the closed-form model (notebook 09) reads a closed-form OU marginal at
 horizon h, this model *evolves the cloud-state latent forward* with a learned
-neural SDE (Euler-Maruyama) and decodes the future latent to a PV distribution —
+neural SDE (Euler-Maruyama) and decodes the future latent to a PV distribution, 
 the original CLAUDE.md design. This explicitly models cloud-state EVOLUTION
 (advection), the mechanism SkyGPT gets by generating future sky images, but in
 latent space (no pixel generation).
@@ -11,7 +11,7 @@ Drop-in by design: `RolloutLatentSDE.forward(z_seq, kt_seq, c_seq, cti, h_norm)`
 returns the SAME `(pi_ext, mean_ext, std_ext)` mixture-over-delta-kt as the
 closed-form model, with the SAME calibration buffers, and is aliased to
 `TemporalLatentSDE`. So STAGE_0_V2_CODE, the SkyGPT eval, sampling-efficiency,
-compute-cost, and cross-validation all run UNCHANGED — only the marginal is now
+compute-cost, and cross-validation all run UNCHANGED, only the marginal is now
 produced by rolling the SDE forward. Ablations need a rollout-specific version
 (ABLATIONS_ROLLOUT_CODE) since the internal components differ.
 """
@@ -216,7 +216,7 @@ print("SolarSDE-Rollout architecture loaded "
 
 
 # ============================================================
-# ABLATIONS_ROLLOUT_CODE — ablations of the rollout architecture
+# ABLATIONS_ROLLOUT_CODE: ablations of the rollout architecture
 # A1 full | A2 no-CTI diffusion | A4 no-persistence | A5 deterministic (no diffusion) | A7 no-covariates
 # ============================================================
 ABLATIONS_ROLLOUT_CODE = '''\

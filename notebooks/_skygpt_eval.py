@@ -15,7 +15,7 @@ SkyGPT's headline claim: +23% CRPS over smart persistence, +13% over SUNSET.
 
 Protocol note (disclosed): we TRAIN on the SKIPP'D benchmark release
 (2017-03..2019-10, same site/period as SkyGPT's train) and TEST on SkyGPT's
-identical Nov-Dec 2019 file — zero leakage (train ends Oct 26, test starts
+identical Nov-Dec 2019 file: zero leakage (train ends Oct 26, test starts
 Nov 12). Each test window provides 16 one-minute log frames (matching SEQ_LEN=16)
 and 15 future PV values (pv_pred[:,h-1] = PV at t+h min), so horizons 1..15 are
 directly available on the identical set.

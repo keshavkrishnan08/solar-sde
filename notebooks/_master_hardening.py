@@ -9,13 +9,13 @@ def safe_stage(name: str, code: str) -> str:
     subsequent cells continue.
 
     Critical infrastructure (setup, SHARED_CODE, LOAD_DATA, STAGE 0, POST
-    verify, ZIP) should NOT be wrapped — losing those means the whole run
+    verify, ZIP) should NOT be wrapped: losing those means the whole run
     is degenerate. Analytic / figure / table stages SHOULD be wrapped so a
     single bug doesn't take down the entire 08b run."""
     # Indent every line of `code` by 4 spaces so it sits inside `try:`.
     indented = "\n".join(("    " + ln if ln else "") for ln in code.splitlines())
     # _StageSkip: a sentinel a stage can raise to indicate "clean skip, not
-    # failure" — e.g. a v2 model is present and the legacy code path doesn't
+    # failure": e.g. a v2 model is present and the legacy code path doesn't
     # apply. Caught BEFORE the generic Exception handler so the SKIP prints
     # without a traceback or `[STAGE FAILED]` banner.
     return (
@@ -37,7 +37,7 @@ def safe_stage(name: str, code: str) -> str:
 
 
 # ============================================================
-# PREFLIGHT_SANITY_CODE — runs right after FAST_START
+# PREFLIGHT_SANITY_CODE: runs right after FAST_START
 #   - Asserts every name that downstream cells consume is in scope
 #   - Validates any pre-existing checkpoint is loadable + not NaN
 #   - Reports free disk so the user catches an unwriteable session early
@@ -102,7 +102,7 @@ print("PREFLIGHT: all required names present.")
 
 
 # ============================================================
-# POST_STAGE0_VERIFY_CODE — runs immediately after STAGE0_CODE
+# POST_STAGE0_VERIFY_CODE: runs immediately after STAGE0_CODE
 #   - Confirms sde_best.pt + score_best.pt exist (or that STAGE0 took
 #     its skip branch with pre-existing ckpts)
 #   - Loads each ckpt and asserts no NaN/Inf weights crept in during
@@ -138,7 +138,7 @@ print("[OK] STAGE 0 checkpoints verified (no NaN/Inf weights).")
 
 
 # ============================================================
-# STAGE_M1_SAFE_FALLBACK_CODE — runs before STAGE_MINUS1_CODE
+# STAGE_M1_SAFE_FALLBACK_CODE: runs before STAGE_MINUS1_CODE
 #   - If image_features.npy already exists, no-op (STAGE_MINUS1 will skip)
 #   - Else if Golden retrain extracted images into DATA_DIR/cloudcv,
 #     symlink them into WORK_DIR/cloudcv where STAGE_MINUS1 expects them

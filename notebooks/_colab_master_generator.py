@@ -3,7 +3,7 @@
 ONE notebook that runs the entire SolarSDE pipeline end-to-end for Energy Reports
 submission. Designed for Colab (preferably Pro+ for 24h sessions, or Pro across
 2 sessions). All artifacts persist to Google Drive so partial runs survive
-session disconnects — re-run and finished stages skip.
+session disconnects: re-run and finished stages skip.
 
 What it produces (single Energy Reports submission package):
   - Golden CO probabilistic solar forecasts at h=1,5,10,20,30 min
@@ -191,7 +191,7 @@ if torch.cuda.is_available():
 
 
 # Reuse the soft fast-start from _final_generator (try to pull cached artifacts
-# from GitHub; never crash if missing — retrain stage will produce them)
+# from GitHub; never crash if missing: retrain stage will produce them)
 FAST_START_GITHUB_CODE = '''\
 # ==== Soft fast-start: try to pull cached artifacts from GitHub ====
 import requests
@@ -635,7 +635,7 @@ def master_nb():
 
         ("markdown", "## STAGE B — Image-feature pre-flight + extraction"),
         # Fallback runs BEFORE LOAD_DATA so cov dim is consistent from the
-        # very first load — and any stale zero-fill that would mismatch an
+        # very first load: and any stale zero-fill that would mismatch an
         # existing SDE ckpt's c_dim is deleted up front.
         ("code", STAGE_M1_SAFE_FALLBACK_CODE),
         ("code", STAGE_MINUS1_CODE),

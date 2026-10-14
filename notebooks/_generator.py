@@ -1,11 +1,11 @@
 """Generator for SolarSDE Colab notebooks.
 
 Produces 5 self-contained .ipynb files:
-  01_data_and_vae.ipynb     — download data, preprocess, train VAE, extract latents
-  02_sde_score_main.ipynb   — train Neural SDE + Score Decoder, main evaluation
-  03_baselines.ipynb        — train 5 baselines, combined main results table
-  04_ablations.ipynb        — 3 ablations (no-CTI, no-score, no-SDE)
-  05_analysis_figures.ipynb — multi-seed, CTI analysis, economic value, all figures
+  01_data_and_vae.ipynb: download data, preprocess, train VAE, extract latents
+  02_sde_score_main.ipynb: train Neural SDE + Score Decoder, main evaluation
+  03_baselines.ipynb: train 5 baselines, combined main results table
+  04_ablations.ipynb: 3 ablations (no-CTI, no-score, no-SDE)
+  05_analysis_figures.ipynb: multi-seed, CTI analysis, economic value, all figures
 
 Each notebook:
   - Runs in < 8 hours on Colab free T4 / Kaggle P100

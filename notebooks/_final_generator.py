@@ -10,7 +10,7 @@ What this notebook produces (every artifact a reviewer will ask for):
   Models:       SolarSDE (3 seeds) + 9 baselines (persistence, smart-pers, LSTM, MC-Dropout,
                 Deep Ensemble x5, TimeGrad, CSDI, ResNet+Image, SUNSET on Stanford)
   Ablations:    A2 (no-CTI), A3 (no-VAE), A4 (no-score), A5 (no-SDE/ODE), A7 (no-covariates)
-                A6 (adjoint training) skipped — documented as future work
+                A6 (adjoint training) skipped: documented as future work
   Statistics:   Bootstrap CIs (B=1000), DM test pairwise, Holm-Bonferroni correction
   Calibration:  Conformal calibration, PIT histograms, reliability diagrams, sharpness
   Stratified:   By CTI quartile, regime cluster, ramp event, zenith bin, time-of-day
@@ -42,7 +42,7 @@ from _combined_generator import (
 # Override the imported ZIP_DOWNLOAD_CODE with a minimal-output variant:
 # Kaggle's Output tab shows everything in /kaggle/working/. We zip PERSIST_DIR,
 # delete the unzipped tree (already inside the zip), and delete WORK_DIR (raw
-# data — regeneratable). End state: /kaggle/working/ contains ONLY the zip +
+# data: regeneratable). End state: /kaggle/working/ contains ONLY the zip +
 # a small summary.csv. Saves user 100+ files of clicking through Output tab.
 ZIP_DOWNLOAD_CODE = '''\
 # ==== Zip outputs and clean up to a single file for easy Kaggle download ====
@@ -312,7 +312,7 @@ else:
 
 
 # ================================================================
-# RETRAIN_GOLDEN_CODE — full Notebook 1 pipeline run inline if anything missing
+# RETRAIN_GOLDEN_CODE: full Notebook 1 pipeline run inline if anything missing
 # ================================================================
 
 RETRAIN_GOLDEN_CODE = '''\

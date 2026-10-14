@@ -86,7 +86,7 @@ SWEEP_CLONE_CODE = CLONE_AND_IMPORT_CODE.replace(
     'globals().update(_safe_import("_arch_variants", ["ARCH_VARIANTS_CODE"]))')
 
 
-# The experiment loop — one big cell that trains + benchmarks every config.
+# The experiment loop: one big cell that trains + benchmarks every config.
 SWEEP_LOOP_CODE = '''\
 # ==== Run every config: train -> SkyGPT benchmark -> record ====
 SWEEP_RESULTS = []

@@ -5,7 +5,7 @@ Train the closed-form model ONCE, then test many improvement ideas at EVAL TIME
 h=15 CRPS most. Lets you find a winning recipe in ~1 training run instead of one
 per idea.
 
-Ideas swept (all post-hoc, all legitimate — calibrated on validation, never test):
+Ideas swept (all post-hoc, all legitimate, calibrated on validation, never test):
   * n_samples       : more Monte-Carlo samples -> lower-variance, slightly lower CRPS
   * std_scale       : global sharpen/widen of the predictive interval
   * smartpers_blend : mix model samples with smart-persistence samples. On cloudy
@@ -226,7 +226,7 @@ if torch.cuda.is_available(): torch.cuda.empty_cache()
 
 
 # ============================================================
-# DEEP_ENSEMBLE_CODE — train K independently-seeded closed-form models, pool them.
+# DEEP_ENSEMBLE_CODE: train K independently-seeded closed-form models, pool them.
 # The one legitimate lever with a real shot at beating SkyGPT on cloudy h=15.
 # Saves each member's checkpoint; the sweep can then pool their samples.
 # ============================================================

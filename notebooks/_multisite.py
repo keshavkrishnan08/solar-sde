@@ -1,7 +1,7 @@
 """Multi-site data downloaders + cross-site evaluation.
 
 Three public datasets pulled fully automatically. No API keys, no manual
-steps — every URL probed live before this module shipped.
+steps: every URL probed live before this module shipped.
 
   SURFRAD    7 NOAA pyranometer stations across the US (BON, DRA, FPK, GWN,
              PSU, SXF, TBL). 1-minute GHI/DNI/DHI, 1995-present, public FTP.
@@ -13,7 +13,7 @@ steps — every URL probed live before this module shipped.
 
   NSRDB      NREL satellite-derived irradiance at any CONUS lat/lon. 30-min
              cadence, 1998-2023. Requires free API key from
-             developer.nrel.gov (1000 calls/hour, 5000/day). Optional —
+             developer.nrel.gov (1000 calls/hour, 5000/day). Optional, 
              skips gracefully if key absent.
 
 Wired into the master notebooks as a new STAGE M (Multi-site validation)
@@ -23,7 +23,7 @@ size-validated.
 
 
 # ============================================================
-# DOWNLOAD_SURFRAD_CODE — pulls SURFRAD 1-min GHI from NOAA
+# DOWNLOAD_SURFRAD_CODE: pulls SURFRAD 1-min GHI from NOAA
 # ============================================================
 DOWNLOAD_SURFRAD_CODE = '''\
 # ==== SURFRAD multi-site download (NOAA Global Monitoring Lab) ====
@@ -152,7 +152,7 @@ print("\\nSURFRAD parsing complete.")
 
 
 # ============================================================
-# DOWNLOAD_SKIPPD_CODE — pulls SKIPP'D Stanford sky images + GHI
+# DOWNLOAD_SKIPPD_CODE: pulls SKIPP'D Stanford sky images + GHI
 # ============================================================
 DOWNLOAD_SKIPPD_CODE = '''\
 # ==== SKIPP'D download (Stanford sky imagery + irradiance) ====
@@ -212,7 +212,7 @@ for f in sorted(SKIPPD_DIR.rglob("*.parquet")):
 
 
 # ============================================================
-# DOWNLOAD_NSRDB_CODE — pulls NSRDB satellite-derived GHI via NREL API
+# DOWNLOAD_NSRDB_CODE: pulls NSRDB satellite-derived GHI via NREL API
 # ============================================================
 DOWNLOAD_NSRDB_CODE = '''\
 # ==== NSRDB multi-site download (NREL PSM3 v3) ====
@@ -278,7 +278,7 @@ else:
 
 
 # ============================================================
-# MULTISITE_EVAL_CODE — evaluate Golden-trained SolarSDE on SURFRAD
+# MULTISITE_EVAL_CODE: evaluate Golden-trained SolarSDE on SURFRAD
 # ============================================================
 MULTISITE_EVAL_CODE = '''\
 # ==== Multi-site evaluation: persistence baseline at each SURFRAD station ====

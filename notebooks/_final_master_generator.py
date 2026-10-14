@@ -2,13 +2,13 @@
 
 Design principles:
   1. GITHUB-PULL: cells clone github.com/keshavkrishnan08/SDE and import the
-     actual repo modules — the code that runs IS the code in the repo, not a
+     actual repo modules: the code that runs IS the code in the repo, not a
      rewritten copy embedded in the notebook.
   2. DUAL ARCHITECTURE: trains BOTH the closed-form (Mixture-of-OU) and the
      rollout (Euler-Maruyama latent rollout) models, plus their ENSEMBLE.
   3. CHAMPION SELECTION on validation (legitimate model selection, never test).
   4. ULTRA-ROBUST: every import is fallback-guarded, every stage is safe_stage
-     wrapped, and every cell body has its own try/except — a failure anywhere
+     wrapped, and every cell body has its own try/except, a failure anywhere
      prints and continues; the run always reaches the final zip.
   5. COMPLETE SUITE: SkyGPT exact benchmark (all variants), baselines, ablations,
      stratified+DM, CV, PIT/bootstrap, ramp, CTI, reliability, sampling, compute,
@@ -26,7 +26,7 @@ REPO_ZIP   = "https://github.com/keshavkrishnan08/SDE/archive/refs/heads/main.zi
 
 
 # ============================================================
-# Cell 1 — Environment setup (inline: runs before the repo exists locally)
+# Cell 1: Environment setup (inline: runs before the repo exists locally)
 # ============================================================
 SETUP_CODE = '''\
 # ==== Setup: environment, directories, torch warmup ====
@@ -79,7 +79,7 @@ print(f"Config: VAE={SKIPPD_VAE_EPOCHS}ep, closed-form={CLOSEDFORM_EPOCHS}ep, "
 
 
 # ============================================================
-# Cell 2 — Clone the repo + import every CODE constant (fallback-guarded)
+# Cell 2: Clone the repo + import every CODE constant (fallback-guarded)
 # ============================================================
 CLONE_AND_IMPORT_CODE = f'''\
 # ==== Pull the SolarSDE codebase from GitHub and import the actual modules ====

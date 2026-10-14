@@ -1,21 +1,21 @@
-"""Architecture variants for the fast-iterate notebook (12) — for the SkyGPT
+"""Architecture variants for the fast-iterate notebook (12), for the SkyGPT
 h= benchmark experiments only.
 
 Five drop-in architectures the SkyGPT eval can test back-to-back. Four are the
 existing closed-form Mixture-of-OU at different capacities (just different
-constructor args — the model already takes n_components / d_model / n_layers);
+constructor args: the model already takes n_components / d_model / n_layers);
 one swaps the transformer encoder for a GRU. All share the exact
 (pi, mean, std) interface, so STAGE_0 / SkyGPT eval / sweep run unchanged.
 
 ARCH menu (set ARCH = "..." in notebook 12):
-  "base"      K=3  d=128 L=2   — current closed-form (reference)
-  "bigmix"    K=8  d=128 L=3   — heavy-tail mixture (8 OU components) for cloudy ramps
-  "wide"      K=4  d=256 L=2   — wider transformer (more representation capacity)
-  "deep"      K=4  d=128 L=4   — deeper transformer (longer-range history mixing)
-  "gru"       K=3  d=128 L=2   — GRU temporal encoder (different temporal inductive bias)
+  "base"      K=3  d=128 L=2: current closed-form (reference)
+  "bigmix"    K=8  d=128 L=3: heavy-tail mixture (8 OU components) for cloudy ramps
+  "wide"      K=4  d=256 L=2: wider transformer (more representation capacity)
+  "deep"      K=4  d=128 L=4: deeper transformer (longer-range history mixing)
+  "gru"       K=3  d=128 L=2: GRU temporal encoder (different temporal inductive bias)
 
 HONEST NOTE: all five consume the same 64-d POOLED VAE latent, which discards
-*where* clouds are. That pooling — not the forecasting head — is the main reason
+*where* clouds are. That pooling: not the forecasting head, is the main reason
 the model only ties smart-persistence on cloudy days. So these variants test
 capacity/encoder choices and may help at the margin, but the architecture that
 would genuinely beat SkyGPT needs spatial/optical-flow cloud-motion in image

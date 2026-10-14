@@ -1,16 +1,16 @@
-"""SKIPP'D pipeline — makes the 497-day Stanford sky-image + PV dataset feed the
+"""SKIPP'D pipeline: makes the 497-day Stanford sky-image + PV dataset feed the
 existing TemporalLatentSDE / STAGE_0_V2 stack.
 
 Why this exists: NREL CloudCV only publishes 8 days of sky imagery, which gave
 the SDE 1 validation day and wrecked conformal calibration (PICP 0.59-0.74). The
 SKIPP'D benchmark (huggingface.co/datasets/skyimagenet/SKIPPD) is 497 days of
-64x64 sky images + rooftop-PV at 1-min cadence — ~75 validation days after a
+64x64 sky images + rooftop-PV at 1-min cadence, ~75 validation days after a
 chronological split, which makes calibration transfer and lets the model win at
 every horizon (validated locally: +14% to +22% skill, PICP 0.93-0.98).
 
 Target is PV power (kW). We form a clear-sky-PV index kt = PV / clearsky_PV where
 the clear-sky envelope is an empirical (month, minute-of-day) high quantile built
-from the full label set. CTI (cloud turbulence index) and the SDE are unchanged —
+from the full label set. CTI (cloud turbulence index) and the SDE are unchanged, 
 the architecture is dataset-agnostic given the {Z, cti, kt, gcs, ghi, ...} contract.
 
 CODE blocks (run in this order on a GPU notebook):

@@ -1,4 +1,4 @@
-"""SolarSDE — Temporal Latent Neural SDE with closed-form Mixture-of-OU
+"""SolarSDE: Temporal Latent Neural SDE with closed-form Mixture-of-OU
 marginals, transformer-encoded history, learnable persistence-blend, and
 post-training conformal calibration.
 
@@ -32,7 +32,7 @@ TemporalLatentSDE. STAGE_0_V2_CODE trains the new model.
 
 
 # ============================================================
-# MDN_ARCHITECTURE_CODE — TemporalLatentSDE + helpers
+# MDN_ARCHITECTURE_CODE: TemporalLatentSDE + helpers
 # ============================================================
 MDN_ARCHITECTURE_CODE = '''\
 # ==== SolarSDE: Temporal Latent Neural SDE ====
@@ -297,7 +297,7 @@ print("SolarSDE architecture loaded "
 
 
 # ============================================================
-# STAGE_0_V2_CODE — trains the TemporalLatentSDE end-to-end:
+# STAGE_0_V2_CODE: trains the TemporalLatentSDE end-to-end:
 # 1. compute sigma_pers from 90-day extended BMS
 # 2. train transformer + SDE heads with CRPS on blended mixture
 # 3. post-training conformal calibration on val
@@ -702,7 +702,7 @@ else:
 
 
 # ============================================================
-# POST_STAGE0_V2_VERIFY_CODE — ckpt health + competitiveness check
+# POST_STAGE0_V2_VERIFY_CODE: ckpt health + competitiveness check
 # ============================================================
 POST_STAGE0_V2_VERIFY_CODE = '''\
 # ==== Verify STAGE 0 produced a healthy + competitive Latent Neural SDE ====
@@ -739,7 +739,7 @@ if _pers_csv.exists():
 
 
 # ============================================================
-# ABLATIONS_V2_CODE — v2-native ablations of TemporalLatentSDE.
+# ABLATIONS_V2_CODE: v2-native ablations of TemporalLatentSDE.
 # Each variant mutates the trained model in-place to disable ONE component:
 #   A1: full model (baseline)
 #   A2: no CTI conditioning (cti_gate=0, sigma_pers_cti_alpha=-inf)

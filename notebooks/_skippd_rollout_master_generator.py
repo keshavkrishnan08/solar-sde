@@ -1,7 +1,7 @@
 """Build notebook 10: SolarSDE-ROLLOUT on SKIPP'D.
 
 Identical experiment suite to notebook 09, but the SDE marginal is produced by
-ROLLING THE LATENT FORWARD (Euler-Maruyama) and decoding the future latent —
+ROLLING THE LATENT FORWARD (Euler-Maruyama) and decoding the future latent, 
 the latent-rollout / cloud-state-evolution variant (original CLAUDE.md design),
 the method-level attempt to match SkyGPT's cloud-motion modeling.
 
