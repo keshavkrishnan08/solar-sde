@@ -72,7 +72,7 @@ for sub in ["splits", "extended", "checkpoints", "latents", "results", "figures"
         print(f"  {sub}/: {n} files, {total/1e6:.1f} MB")
         summary_rows.append({"folder": sub, "files": n, "size_mb": total / 1e6})
 
-# Save a tiny summary CSV alongside the zip — useful for a quick peek without unzipping
+# Save a tiny summary CSV alongside the zip: useful for a quick peek without unzipping
 summary_csv = (Path("/kaggle/working") if IN_KAGGLE else WORK_DIR) / "solarsde_outputs_summary.csv"
 import pandas as pd
 pd.DataFrame(summary_rows).to_csv(summary_csv, index=False)
@@ -153,7 +153,7 @@ def download_with_retry(url, dest, min_size=MIN_TAR_SIZE_BYTES, max_retries=4):
         print(f"  Already have: {dest.name} ({dest.stat().st_size / 1e6:.1f} MB)")
         return True
     if dest.exists() and dest.stat().st_size < min_size:
-        print(f"  Partial/corrupt file {dest.name} ({dest.stat().st_size / 1e6:.2f} MB) — removing.")
+        print(f"  Partial/corrupt file {dest.name} ({dest.stat().st_size / 1e6:.2f} MB), removing.")
         dest.unlink()
 
     last_err = None
@@ -218,7 +218,7 @@ for tgz in sorted(CLOUDCV_DIR.glob("2019_*.tar.gz")):
             raise RuntimeError(f"only {n_imgs} images extracted (expected ~500-1000)")
         print(f"  {stem}: extracted ({n_imgs} images)")
     except Exception as e:
-        print(f"  {stem}: EXTRACT FAILED ({e}) — marking tar for re-download")
+        print(f"  {stem}: EXTRACT FAILED ({e}), marking tar for re-download")
         corrupt.append(tgz.name)
         if tgz.exists():
             tgz.unlink()
@@ -241,7 +241,7 @@ print("Extraction complete. tar.gz archives removed to free disk.")
 
 FAST_START_SOFT_CODE = '''\
 # ==== Soft fast-start: pull cached artifacts from GitHub if available ====
-# Never raises — if anything is missing, the from-scratch stages below will
+# Never raises: if anything is missing, the from-scratch stages below will
 # produce it. This block exists purely as a fast path for users who don't
 # want to spend 6+ hours retraining the Golden VAE.
 
@@ -305,9 +305,9 @@ print(f"  Extended parquets:   {HAVE_EXTENDED}")
 
 NEED_GOLDEN_RETRAIN = not (HAVE_VAE and HAVE_SPLITS and HAVE_LATENTS and HAVE_KT and HAVE_PHYS)
 if NEED_GOLDEN_RETRAIN:
-    print("\\n[INFO] Some Golden artifacts missing — RETRAIN_GOLDEN stage will produce them.")
+    print("\\n[INFO] Some Golden artifacts missing, RETRAIN_GOLDEN stage will produce them.")
 else:
-    print("\\n[INFO] All Golden artifacts present — RETRAIN_GOLDEN stage will skip.")
+    print("\\n[INFO] All Golden artifacts present, RETRAIN_GOLDEN stage will skip.")
 '''
 
 
@@ -332,7 +332,7 @@ RETRAIN_GOLDEN_CODE = '''\
 #   Total Golden retrain:           ~3 hours
 
 if not NEED_GOLDEN_RETRAIN:
-    print("[SKIP] Golden retrain not needed — all artifacts present.")
+    print("[SKIP] Golden retrain not needed, all artifacts present.")
 '''
 
 # Note: the conditional retrain wraps the Notebook 1 blocks below, but we
@@ -431,7 +431,7 @@ else:
 
     BMS_PATH = DATA_DIR / "bms" / "bms_srrl_2019.csv"
     if not BMS_PATH.exists():
-        print("[WARN] BMS data not present — extended splits cannot be built.")
+        print("[WARN] BMS data not present, extended splits cannot be built.")
         print("       Re-run BMS_DOWNLOAD cell first, or LSTM baselines will be limited.")
     else:
         try:
@@ -523,7 +523,7 @@ data = {s: load_split(s) for s in ["train", "val", "test"]}
 
 # CTI NORMALIZATION. Raw CTI = ||Var(latent velocity)||_2 lands around 1e-4, far
 # too compressed for the model's CTI-conditional diffusion gate / persistence
-# widening to respond — so the model could not tell a stormy minute from a calm
+# widening to respond: so the model could not tell a stormy minute from a calm
 # one, and coverage collapsed on turbulent days (CV folds showed PICP 0.42-0.92
 # day-to-day). We rescale by a robust TRAIN statistic (90th pct) so turbulent
 # periods reach O(1+) magnitude while staying non-negative (CTI is a magnitude;
@@ -550,7 +550,7 @@ val_df   = pd.read_parquet(SPLITS_DIR / "val.parquet")
 test_df  = pd.read_parquet(SPLITS_DIR / "test.parquet")
 print(f"\\n8-day image splits: train={len(train_df):,} val={len(val_df):,} test={len(test_df):,}")
 
-# Extended (90-day BMS) splits — used by LSTM/MC-Dropout/TimeGrad/Deep-Ensemble baselines.
+# Extended (90-day BMS) splits: used by LSTM/MC-Dropout/TimeGrad/Deep-Ensemble baselines.
 # If missing, we fall back to using the regular train_df/val_df for those baselines.
 HAVE_EXT = (EXTENDED_DIR / "train.parquet").exists() and (EXTENDED_DIR / "val.parquet").exists()
 if HAVE_EXT:
@@ -558,7 +558,7 @@ if HAVE_EXT:
     ext_val   = pd.read_parquet(EXTENDED_DIR / "val.parquet")
     print(f"90-day extended:    train={len(ext_train):,} val={len(ext_val):,}")
 else:
-    print("[WARN] Extended (90-day BMS) parquets missing — LSTM baselines will train on the")
+    print("[WARN] Extended (90-day BMS) parquets missing, LSTM baselines will train on the")
     print("       8-day image splits instead, with reduced sample count.")
     # Fallback: replicate the structure expected by BASELINES_CODE
     ext_train = train_df.copy()
@@ -606,7 +606,7 @@ def _gate(condition: str, body: str) -> str:
 # NEW CODE BLOCKS (publication-grade additions)
 # ================================================================
 
-HEADER_FINAL_MD = """# SolarSDE — Final Publication Notebook (Energy Reports / Applied Energy)
+HEADER_FINAL_MD = """# SolarSDE, Final Publication Notebook (Energy Reports / Applied Energy)
 
 **End-to-end experimental pipeline. Runtime: ~25-35 hours across 2-3 Kaggle sessions.**
 
@@ -637,7 +637,7 @@ disk and skips if outputs already exist.
 1. Enable P100 GPU (Settings → Accelerator → GPU P100)
 2. Set internet ON (needed for downloads)
 3. Run all cells. The notebook will checkpoint after each stage.
-4. If the 12-hour timer hits before completion, save and re-run — finished stages skip.
+4. If the 12-hour timer hits before completion, save and re-run, finished stages skip.
 5. Final cell zips everything; download the zip from the right sidebar.
 
 ## Stage map (runtime estimates)
@@ -663,7 +663,7 @@ variance. Multi-seed mean ± std is reported in the final tables.
 
 **SUNSET note:** Reproduces the SKIPP'D benchmark CNN from
 Sun et al. 2019 (Solar Energy). Compares SolarSDE against the published baseline
-on the same test split — critical for reviewer credibility.
+on the same test split, critical for reviewer credibility.
 
 **Why no A6 (adjoint training):** Adjoint sensitivity for SDEs is computationally
 prohibitive (10-20× slower) and gradient-noisy. Documented as future work in the
@@ -723,7 +723,7 @@ else:
             print(f"  Already have: {dest.name} ({dest.stat().st_size / 1e9:.2f} GB)")
             return True
         if dest.exists() and dest.stat().st_size < min_size:
-            print(f"  Partial/corrupt {dest.name} ({dest.stat().st_size / 1e6:.2f} MB) — removing.")
+            print(f"  Partial/corrupt {dest.name} ({dest.stat().st_size / 1e6:.2f} MB), removing.")
             dest.unlink()
         last_err = None
         for attempt in range(1, max_retries + 1):
@@ -928,7 +928,7 @@ else:
         sf_kt_val = np.load(SF_LATENTS_DIR / "val_kt.npy")
         sf_cov_val = np.load(SF_LATENTS_DIR / "val_covariates.npy")
 
-        # SDE — same architecture, dt=60s for Stanford (1-min sampling)
+        # SDE: same architecture, dt=60s for Stanford (1-min sampling)
         sf_sde = LatentNeuralSDE(z_dim=64, c_dim=sf_cov_tr.shape[1]).to(DEVICE)
         opt_sde = torch.optim.Adam(sf_sde.parameters(), lr=5e-4)
 
@@ -1036,7 +1036,7 @@ else:
     sf_score.load_state_dict(torch.load(SF_SCORE_CKPT, map_location=DEVICE, weights_only=False))
     sf_score.eval()
 
-    HORIZONS_SF = [1, 5, 10, 20, 30]   # minutes — harmonized with Golden HORIZON_MIN values
+    HORIZONS_SF = [1, 5, 10, 20, 30]   # minutes, harmonized with Golden HORIZON_MIN values
     N_SAMPLES = 50
     rows = []
     with torch.no_grad():
@@ -1267,7 +1267,7 @@ def bootstrap_ci(per_sample, B=B_BOOT, alpha=0.05, agg=np.mean, seed=42):
 # Pre-existing prediction file from STRATIFIED stage:
 PRED_FILE = RESULTS_DIR / "test_predictions_h10min.npz"
 if not PRED_FILE.exists():
-    print(f"[WARN] {PRED_FILE.name} not found — run STRATIFIED stage first.")
+    print(f"[WARN] {PRED_FILE.name} not found, run STRATIFIED stage first.")
 else:
     pred_npz = np.load(PRED_FILE)
     print(f"  Loaded {PRED_FILE.name}: keys = {list(pred_npz.keys())}")
@@ -1383,7 +1383,7 @@ def sharpness(samples, level=0.9):
 
 PRED_NPZ = RESULTS_DIR / "test_predictions_h10min.npz"
 if not PRED_NPZ.exists():
-    print(f"[WARN] {PRED_NPZ.name} not found — run STRATIFIED stage first.")
+    print(f"[WARN] {PRED_NPZ.name} not found, run STRATIFIED stage first.")
 else:
     npz = np.load(PRED_NPZ)
     # Tolerate either naming scheme: CALIBRATION saved as y_true/y_samples
@@ -1528,7 +1528,7 @@ else:
     RAW_DIR_GOLDEN = WORK_DIR / "cloudcv"
     has_images = RAW_DIR_GOLDEN.exists() and any(RAW_DIR_GOLDEN.glob("*/images/*.jpg"))
     if not has_images:
-        print("[A3] Raw Golden images not found locally. A3 requires images — skipping.")
+        print("[A3] Raw Golden images not found locally. A3 requires images, skipping.")
         print("     To run A3, re-run Notebook 1's image download first.")
     else:
         print("=" * 70); print("ABLATION A3: Replace VAE latent with pixel PCA (64 components)"); print("=" * 70)
@@ -1583,7 +1583,7 @@ else:
         cti_tr_px = cti_pca(z_tr_px); cti_te_px = cti_pca(z_te_px)
         print(f"  CTI (PCA) stats: train mean={cti_tr_px.mean():.3f}, test mean={cti_te_px.mean():.3f}")
 
-        # Save PCA latents (we don't retrain SDE/Score here — just quote the
+        # Save PCA latents (we don't retrain SDE/Score here: just quote the
         # unconditional forecasts as an indicator. Full A3 retraining = 4+ hrs
         # and would need a separate stage. Here we report *degraded latent quality*
         # as the A3 result by computing persistence-in-PCA-latent reconstruction error,
@@ -1594,7 +1594,7 @@ else:
         np.save(LATENT_DIR / "test_pca_cti.npy", cti_te_px)
 
         # Quick proxy A3: replace z in SDE call with PCA z, keep trained decoder
-        # (decoder was trained on VAE latents, so mismatch — this mismatch IS the
+        # (decoder was trained on VAE latents, so mismatch: this mismatch IS the
         # A3 result: shows VAE latents matter).
         sde_vae = LatentNeuralSDE(z_dim=Z_DIM, c_dim=C_DIM).to(DEVICE)
         sde_vae.load_state_dict(torch.load(CHECKPOINT_DIR / "sde_best.pt", map_location=DEVICE, weights_only=False))
@@ -1661,7 +1661,7 @@ RAMP_AUROC_CODE = '''\
 #
 # 2. CTI lead-time: for each observed ramp event, look at CTI(t-k) for k in
 #    [-5, +30] timesteps. If CTI rises before the ramp, it has predictive
-#    value as an early-warning indicator — a strong operational story.
+#    value as an early-warning indicator: a strong operational story.
 
 from sklearn.metrics import roc_auc_score
 
@@ -1753,7 +1753,7 @@ if (CHECKPOINT_DIR / "mdn_v2_best.pt").exists():
     if (not _co.exists()) and _mr.exists():
         pd.read_csv(_mr).to_csv(_co, index=False)
         print(f"    [INFO] mirrored solar_sde_main_results.csv -> {_co.name}")
-    raise _StageSkip("v2 model detected — corrected inference unnecessary "
+    raise _StageSkip("v2 model detected, corrected inference unnecessary "
                      "(closed-form OU marginals avoid rollout drift)")
 ADVANCE_IDX = [0, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 ADVANCE_MASK = np.zeros(C_DIM, dtype=bool)
@@ -1955,7 +1955,7 @@ EXTRA_BASELINES_CODE = '''\
 # Self-contained: rebuilds LSTM sequence tensors inline (doesn't depend on
 # cached files from the standard BASELINES stage).
 #
-# Toggle flags below — flip True to enable. Default: only SUNSET is on,
+# Toggle flags below: flip True to enable. Default: only SUNSET is on,
 # since CSDI (in standard baselines) already covers the score-based diffusion
 # baseline category, and MC-Dropout covers LSTM-with-uncertainty. The others
 # are nice-to-have but eat ~5-6 hours of GPU time for marginal paper benefit.
@@ -1963,7 +1963,7 @@ EXTRA_BASELINES_CODE = '''\
 ENABLE_DEEP_ENSEMBLE = False    # 5x LSTM ensemble (~1h). Cut: MC-Dropout already covers it.
 ENABLE_TIMEGRAD      = False    # RNN+DDPM autoregressive (~2-3h). Cut: CSDI covers diffusion class.
 ENABLE_RESNET_IMAGE  = False    # ResNet-18 deterministic (~2h). Cut: poor CRPS vs probabilistic methods.
-ENABLE_SUNSET        = True     # SKIPP'D benchmark CNN (~1h). KEEP — required Stanford reference.
+ENABLE_SUNSET        = True     # SKIPP'D benchmark CNN (~1h). KEEP, required Stanford reference.
 
 SEQ_LEN_X = 30
 def build_seq_tensors_x(df, seq_len, horizons):
@@ -2160,7 +2160,7 @@ else:
     print("=" * 70); print("BASELINE: ResNet-18 + Sky Image"); print("=" * 70)
     RAW_DIR = WORK_DIR / "cloudcv"
     if not RAW_DIR.exists() or not any(RAW_DIR.glob("*/images/*.jpg")):
-        print("  [WARN] Raw images not found — ResNet+Image skipped.")
+        print("  [WARN] Raw images not found, ResNet+Image skipped.")
     else:
         from torchvision.models import resnet18
         from PIL import Image as PImg
@@ -2216,7 +2216,7 @@ else:
                         preds_l.append(model(xb.to(DEVICE)).squeeze(-1).cpu().numpy())
                         truths_l.append(yb.numpy())
                 preds = np.concatenate(preds_l); yt = np.concatenate(truths_l)
-                # Deterministic — wrap as point=mean ensemble (single sample) for CRPS comparability
+                # Deterministic: wrap as point=mean ensemble (single sample) for CRPS comparability
                 preds_ens = preds[:, None]
                 m = {
                     "horizon_min": HORIZON_MIN[h], "horizon_steps": h, "n_eval": len(yt),
@@ -2241,7 +2241,7 @@ elif SS_OUT.exists():
 else:
     SF_LATENTS_DIR_LOCAL = LATENT_DIR / "stanford"
     if not SF_LATENTS_DIR_LOCAL.exists() or not (SF_LATENTS_DIR_LOCAL / "test_pv.npy").exists():
-        print("[SKIP] SUNSET: Stanford pipeline not complete (Stage A) — skipping.")
+        print("[SKIP] SUNSET: Stanford pipeline not complete (Stage A), skipping.")
     else:
         print("=" * 70); print("BASELINE: SUNSET (Sun et al. Solar Energy 2019)"); print("=" * 70)
         # Reproduces the SKIPP'D benchmark CNN: 3 conv blocks → 2 dense → PV output
@@ -2347,7 +2347,7 @@ if not ENABLE_CROSSSITE:
 elif CS_OUT.exists():
     print("[SKIP] Cross-site transfer already done.")
 elif not SF_LATENTS_DIR_X.exists() or not (SF_LATENTS_DIR_X / "test_latents.npy").exists():
-    print("[WARN] Stanford latents not found — Stage A must complete first. Skipping.")
+    print("[WARN] Stanford latents not found, Stage A must complete first. Skipping.")
 else:
     print("=" * 70); print("CROSS-SITE TRANSFER (Golden -> Stanford)"); print("=" * 70)
     # Load Golden-trained models
@@ -2358,7 +2358,7 @@ else:
     score_g.load_state_dict(torch.load(CHECKPOINT_DIR / "score_best.pt", map_location=DEVICE, weights_only=False))
     score_g.eval()
 
-    # Stanford test data — but covariate dim differs (5 for Stanford vs ~30 for Golden)
+    # Stanford test data: but covariate dim differs (5 for Stanford vs ~30 for Golden)
     # Pad/truncate Stanford covariates to Golden's C_DIM with zeros.
     sf_z = np.load(SF_LATENTS_DIR_X / "test_latents.npy")
     sf_cti = np.load(SF_LATENTS_DIR_X / "test_cti.npy")
@@ -2433,7 +2433,7 @@ HOURS_PER_YEAR = 8760
 
 PRED_NPZ_E = RESULTS_DIR / "test_predictions_h10min.npz"
 if not PRED_NPZ_E.exists():
-    print(f"[WARN] {PRED_NPZ_E.name} not found — skipping economic stage.")
+    print(f"[WARN] {PRED_NPZ_E.name} not found, skipping economic stage.")
 else:
     npz = np.load(PRED_NPZ_E)
     # Tolerate either naming scheme (preds/truths or y_samples/y_true)
@@ -2501,12 +2501,12 @@ plt.rcParams.update({
     "axes.spines.top": False, "axes.spines.right": False,
 })
 
-# Figure 1: CRPS vs horizon, all models (already in ANALYSIS_CODE — copy here)
+# Figure 1: CRPS vs horizon, all models (already in ANALYSIS_CODE, copy here)
 # Figure 2: Skill score vs persistence by horizon
 # Figure 3: Reliability diagram
 # Figure 4: PIT histograms
 # Figure 5: CTI vs CRPS scatter (binned)
-# Figure 6: Forecast traces — 4 weather regimes (clear, transition, broken, overcast)
+# Figure 6: Forecast traces: 4 weather regimes (clear, transition, broken, overcast)
 
 print("Publication figures will be regenerated by the analysis stage already.")
 print("Additional clean figures (PIT, reliability) saved by PIT_RELIABILITY_CODE stage.")
@@ -2638,7 +2638,7 @@ _COMMON_PREFIX = [
 
 # Retrain block (used in Part 1 only; Parts 2 and 3 expect artifacts to exist)
 _RETRAIN_BLOCK = [
-    ("markdown", "## RETRAIN — Golden CO from raw data (skipped if all artifacts already present)"),
+    ("markdown", "## RETRAIN, Golden CO from raw data (skipped if all artifacts already present)"),
     ("code", GOLDEN_RETRAIN_GUARD_CODE),
     ("code", "LATENT_DIM = 64\nIMG_SIZE = 128\n" + VAE_MODEL),
     ("code", _gate("ENABLE_GOLDEN_RETRAIN and not all((DATA_DIR / 'cloudcv' / f).exists() "
@@ -2674,7 +2674,7 @@ if _missing:
            "\\n\\nOn Kaggle: go to Add Data, attach the output dataset from your 07a run.\\n"
            "Locally: re-run 07a_foundations.ipynb first.")
     raise RuntimeError(msg)
-print("Part 1 artifacts found — ready to proceed.")
+print("Part 1 artifacts found, ready to proceed.")
 '''
 
 _REQUIRE_TRAINING_CODE = '''\
@@ -2690,11 +2690,11 @@ if _missing:
            "Missing artifacts:\\n  " + "\\n  ".join(_missing) +
            "\\n\\nAttach the 07b output dataset on Kaggle, or re-run 07b_training.ipynb.")
     raise RuntimeError(msg)
-print("Part 1+2 artifacts found — ready to proceed.")
+print("Part 1+2 artifacts found, ready to proceed.")
 '''
 
 
-HEADER_PART1_MD = """# SolarSDE Part 1 — Foundations (~9-11 hours)
+HEADER_PART1_MD = """# SolarSDE Part 1, Foundations (~9-11 hours)
 
 **Run this notebook FIRST.** Produces the Golden CO VAE + latents + Stanford SKIPP'D pipeline.
 
@@ -2716,7 +2716,7 @@ HEADER_PART1_MD = """# SolarSDE Part 1 — Foundations (~9-11 hours)
 Once Part 1 finishes, run Part 2 (07b_training.ipynb).
 """
 
-HEADER_PART2_MD = """# SolarSDE Part 2 — Training (~7-10 hours)
+HEADER_PART2_MD = """# SolarSDE Part 2, Training (~7-10 hours)
 
 **Run 07a_foundations FIRST.** This notebook assumes the Golden VAE + latents already exist.
 
@@ -2725,7 +2725,7 @@ HEADER_PART2_MD = """# SolarSDE Part 2 — Training (~7-10 hours)
 | Stage | What it does | Est. runtime |
 |-------|--------------|--------------|
 | Stage B | Image features on Golden (optical flow + sun-ROI + cloud fraction) | ~30 min |
-| Stage C | Train SolarSDE on Golden (seed 42) — SDE + Score Decoder | ~3-4h |
+| Stage C | Train SolarSDE on Golden (seed 42), SDE + Score Decoder | ~3-4h |
 | Stage C2 | Re-train with seeds 123 + 456 for mean ± std reporting | ~4-6h |
 | Zip | Package all outputs | <5 min |
 
@@ -2738,7 +2738,7 @@ HEADER_PART2_MD = """# SolarSDE Part 2 — Training (~7-10 hours)
 5. Run Part 3 (07c_evaluation.ipynb) next.
 """
 
-HEADER_PART3_MD = """# SolarSDE Part 3 — Evaluation & Figures (~6-8 hours with default toggles)
+HEADER_PART3_MD = """# SolarSDE Part 3, Evaluation & Figures (~6-8 hours with default toggles)
 
 **Run 07a_foundations and 07b_training FIRST.** This notebook assumes SDE + Score + Stanford results exist.
 
@@ -2757,13 +2757,13 @@ HEADER_PART3_MD = """# SolarSDE Part 3 — Evaluation & Figures (~6-8 hours with
 - `ENABLE_DEEP_ENSEMBLE = False` (MC-Dropout already covers LSTM-with-uncertainty)
 - `ENABLE_TIMEGRAD = False` (CSDI already covers diffusion-baseline category)
 - `ENABLE_RESNET_IMAGE = False` (deterministic CNN loses on CRPS by construction)
-- `ENABLE_A7 = False` (inference-time zeroing is a weak ablation — would need retrain)
+- `ENABLE_A7 = False` (inference-time zeroing is a weak ablation, would need retrain)
 - `ENABLE_COMPUTATIONAL = False` (1 paragraph in paper replaces full benchmark)
-- `ENABLE_SUNSET = True` (KEPT — required Stanford reference baseline)
+- `ENABLE_SUNSET = True` (KEPT, required Stanford reference baseline)
 
 **Known limitations (documented in paper):**
-- Drift `t` parameter has training/inference semantic mismatch (target horizon vs current step) — defensible because z carries horizon info, but suboptimal. Fix needs SDE retrain.
-- VAE trained 20 epochs at 128×128 vs the original spec's 100 epochs at 256×256 — sufficient given dataset size.
+- Drift `t` parameter has training/inference semantic mismatch (target horizon vs current step), defensible because z carries horizon info, but suboptimal. Fix needs SDE retrain.
+- VAE trained 20 epochs at 128×128 vs the original spec's 100 epochs at 256×256, sufficient given dataset size.
 
 ## Stages
 
@@ -2771,7 +2771,7 @@ HEADER_PART3_MD = """# SolarSDE Part 3 — Evaluation & Figures (~6-8 hours with
 |-------|--------------|--------------|
 | C+ | Corrected inference with advanced covariates + per-horizon prediction saves | ~30 min |
 | D | Standard baselines: Persistence, Smart-Pers, LSTM, MC-Dropout, CSDI | ~2-3h |
-| E | SUNSET (only — others cut by default toggles) | ~1h |
+| E | SUNSET (only, others cut by default toggles) | ~1h |
 | F | Ablations A2, A4, A5, A3 (no-VAE PCA) | ~2h |
 | G | Conformal calibration | 10 min |
 | H | Stratified eval + Diebold-Mariano test | 30 min |
@@ -2882,7 +2882,7 @@ else:
                                capture_output=True)
                 diff_res = subprocess.run(["git", "-C", str(tmp_p), "diff", "--cached", "--quiet"])
                 if diff_res.returncode == 0:
-                    print("[SKIP] No changes vs current main — nothing to push.")
+                    print("[SKIP] No changes vs current main, nothing to push.")
                 else:
                     msg = f"Auto-push {NOTEBOOK_TAG} results from Kaggle"
                     subprocess.run(["git", "-C", str(tmp_p), "commit", "-m", msg],
@@ -2904,7 +2904,7 @@ def _tag_cell(tag):
     return ("code", f'NOTEBOOK_TAG = "{tag}"')
 
 
-HEADER_07A1_MD = """# SolarSDE 07a1 — Golden Foundations (~3-4 hours)
+HEADER_07A1_MD = """# SolarSDE 07a1, Golden Foundations (~3-4 hours)
 
 **Run this notebook FIRST.** Produces the Golden CO VAE + latents + physics features +
 extended splits.
@@ -2926,7 +2926,7 @@ extended splits.
    - Or unzip manually to `/kaggle/working/solarsde_outputs/` in 07a2
 """
 
-HEADER_07A2_MD = """# SolarSDE 07a2 — Stanford SKIPP'D Pipeline (~6-8 hours)
+HEADER_07A2_MD = """# SolarSDE 07a2, Stanford SKIPP'D Pipeline (~6-8 hours)
 
 **Run 07a1 FIRST.** This notebook needs the Golden artifacts from 07a1.
 
@@ -2945,7 +2945,7 @@ HEADER_07A2_MD = """# SolarSDE 07a2 — Stanford SKIPP'D Pipeline (~6-8 hours)
 4. Download `solarsde_outputs_combined.zip` from Output tab when done.
 """
 
-HEADER_07B_MD = """# SolarSDE 07b — Training (~4-5 hours)
+HEADER_07B_MD = """# SolarSDE 07b, Training (~4-5 hours)
 
 **Run 07a1 + 07a2 FIRST.** Image features + Golden SolarSDE training.
 
@@ -2955,7 +2955,7 @@ HEADER_07B_MD = """# SolarSDE 07b — Training (~4-5 hours)
 |------|------|------|
 | Image features | Optical flow + sun-ROI + cloud fraction on Golden | ~30 min |
 | Train SolarSDE | Latent Neural SDE + Cond Score Decoder on Golden, seed 42 | ~3-4h |
-| Multi-seed (off by default) | Seeds 123, 456 — toggle ENABLE_MULTISEED=True in Stage C2 cell | +4-6h if on |
+| Multi-seed (off by default) | Seeds 123, 456, toggle ENABLE_MULTISEED=True in Stage C2 cell | +4-6h if on |
 | Zip outputs | Final cell zips PERSIST_DIR to /kaggle/working/ for download | <5 min |
 
 Single-seed run is standard for Energy Reports submissions.
@@ -2965,7 +2965,7 @@ Single-seed run is standard for Energy Reports submissions.
 Attach 07a1 + 07a2 outputs as dataset inputs, run all, download the zip.
 """
 
-HEADER_07C_MD = """# SolarSDE 07c — Evaluation & Figures (~6-8 hours)
+HEADER_07C_MD = """# SolarSDE 07c, Evaluation & Figures (~6-8 hours)
 
 **Run 07a1 + 07a2 + 07b FIRST.** All baselines + ablations + stats + figures.
 
@@ -2980,8 +2980,8 @@ HEADER_07C_MD = """# SolarSDE 07c — Evaluation & Figures (~6-8 hours)
 
 **Cut for runtime (toggleable in cells, default False):**
 - ENABLE_MULTISEED, ENABLE_DEEP_ENSEMBLE, ENABLE_TIMEGRAD, ENABLE_RESNET_IMAGE,
-  ENABLE_A7, ENABLE_COMPUTATIONAL — all default False
-- ENABLE_SUNSET, ENABLE_A3 — default True (required Stanford reference + meaningful ablation)
+  ENABLE_A7, ENABLE_COMPUTATIONAL, all default False
+- ENABLE_SUNSET, ENABLE_A3, default True (required Stanford reference + meaningful ablation)
 
 ## Stages
 
@@ -3033,7 +3033,7 @@ def nb_07a2():
             ("code", _REQUIRE_FOUNDATIONS_CODE),
             ("markdown", "## 2. Load data tensors"),
             ("code", LOAD_DATA_TOLERANT_CODE),
-            ("markdown", "## STAGE A — Stanford SKIPP'D as full second site"),
+            ("markdown", "## STAGE A, Stanford SKIPP'D as full second site"),
             ("code", STANFORD_FULL_PIPELINE_CODE),
             ("markdown", "## Final: zip outputs for Kaggle download"),
             ("code", ZIP_DOWNLOAD_CODE),
@@ -3052,11 +3052,11 @@ def nb_07b():
             ("code", _REQUIRE_FOUNDATIONS_CODE),
             ("markdown", "## 2. Load data tensors"),
             ("code", LOAD_DATA_TOLERANT_CODE),
-            ("markdown", "## STAGE B — Image features (optical flow + sun-ROI + cloud)"),
+            ("markdown", "## STAGE B, Image features (optical flow + sun-ROI + cloud)"),
             ("code", STAGE_MINUS1_CODE),
-            ("markdown", "## STAGE C — Train SolarSDE on Golden (auto-resume)"),
+            ("markdown", "## STAGE C, Train SolarSDE on Golden (auto-resume)"),
             ("code", STAGE0_CODE),
-            ("markdown", "## STAGE C2 — Multi-seed runs (off by default; flip ENABLE_MULTISEED=True to enable)"),
+            ("markdown", "## STAGE C2, Multi-seed runs (off by default; flip ENABLE_MULTISEED=True to enable)"),
             ("code", MULTISEED_CODE),
             ("markdown", "## Final: zip outputs for Kaggle download"),
             ("code", ZIP_DOWNLOAD_CODE),
@@ -3076,33 +3076,33 @@ def nb_07c():
             ("code", _REQUIRE_TRAINING_CODE),
             ("markdown", "## 2. Load data tensors"),
             ("code", LOAD_DATA_TOLERANT_CODE),
-            ("markdown", "## STAGE C+ — Corrected inference (advance time-deterministic covariates)"),
+            ("markdown", "## STAGE C+, Corrected inference (advance time-deterministic covariates)"),
             ("code", CORRECTED_INFERENCE_CODE),
-            ("markdown", "## STAGE D — Standard baselines"),
+            ("markdown", "## STAGE D, Standard baselines"),
             ("code", BASELINES_CODE),
-            ("markdown", "## STAGE E — Extra baselines (SUNSET on by default, others off)"),
+            ("markdown", "## STAGE E, Extra baselines (SUNSET on by default, others off)"),
             ("code", EXTRA_BASELINES_CODE),
-            ("markdown", "## STAGE F — Ablations"),
+            ("markdown", "## STAGE F, Ablations"),
             ("code", ABLATIONS_CODE),
             ("code", EXTRA_ABLATIONS_CODE),
-            ("markdown", "## STAGE G — Conformal calibration"),
+            ("markdown", "## STAGE G, Conformal calibration"),
             ("code", CALIBRATION_CODE),
-            ("markdown", "## STAGE H — Stratified eval + DM test"),
+            ("markdown", "## STAGE H, Stratified eval + DM test"),
             ("code", STRATIFIED_CODE),
-            ("markdown", "## STAGE I — PIT + reliability + sharpness + bootstrap CIs"),
+            ("markdown", "## STAGE I, PIT + reliability + sharpness + bootstrap CIs"),
             ("code", PIT_RELIABILITY_CODE),
             ("code", BOOTSTRAP_CIS_CODE),
-            ("markdown", "## STAGE I+ — Ramp detection AUROC + CTI lead-time"),
+            ("markdown", "## STAGE I+, Ramp detection AUROC + CTI lead-time"),
             ("code", RAMP_AUROC_CODE),
-            ("markdown", "## STAGE J — Cross-site transfer"),
+            ("markdown", "## STAGE J, Cross-site transfer"),
             ("code", CROSSSITE_CODE),
-            ("markdown", "## STAGE K — Economic value (CAISO)"),
+            ("markdown", "## STAGE K, Economic value (CAISO)"),
             ("code", ECONOMIC_CAISO_CODE),
-            ("markdown", "## STAGE L — Computational benchmark (off by default)"),
+            ("markdown", "## STAGE L, Computational benchmark (off by default)"),
             ("code", COMPUTATIONAL_CODE),
-            ("markdown", "## STAGE M — Analysis figures"),
+            ("markdown", "## STAGE M, Analysis figures"),
             ("code", ANALYSIS_CODE),
-            ("markdown", "## STAGE N — Publication figures + LaTeX tables"),
+            ("markdown", "## STAGE N, Publication figures + LaTeX tables"),
             ("code", PUB_FIGURES_CODE),
             ("code", LATEX_TABLES_CODE),
             ("markdown", "## Final: zip the paper package for Kaggle download"),

@@ -24,7 +24,7 @@ the $\ell_2$-norm of the per-dimension variance of the latent velocity. It is la
 
 ## A.3 Latent neural SDE: Mixture of Ornstein: Uhlenbeck processes
 
-We model the forecast residual $\delta k_{t+h} = k_{t+h}-k_t$ (the deviation from smart-persistence) as the marginal of a **mixture of $K$ Ornstein–Uhlenbeck (OU) processes**. A transformer encoder $g_\theta$ ingests the $L$-step history and the conditioning $(\widetilde{\mathrm{CTI}}_t, h)$ to produce a context vector $\xi_t = g_\theta(\{(z_s,k_s,c_s)\}, \widetilde{\mathrm{CTI}}_t, h)\in\mathbb{R}^{128}$. From $\xi_t$, per-component heads emit mixing weights $\pi\in\Delta^{K-1}$, means $\mu\in\mathbb{R}^K$, mean-reversion rates $\theta\in\mathbb{R}_{>0}^K$, and base volatilities $\sigma_0\in\mathbb{R}_{>0}^K$.
+We model the forecast residual $\delta k_{t+h} = k_{t+h}-k_t$ (the deviation from smart-persistence) as the marginal of a **mixture of $K$ Ornstein-Uhlenbeck (OU) processes**. A transformer encoder $g_\theta$ ingests the $L$-step history and the conditioning $(\widetilde{\mathrm{CTI}}_t, h)$ to produce a context vector $\xi_t = g_\theta(\{(z_s,k_s,c_s)\}, \widetilde{\mathrm{CTI}}_t, h)\in\mathbb{R}^{128}$. From $\xi_t$, per-component heads emit mixing weights $\pi\in\Delta^{K-1}$, means $\mu\in\mathbb{R}^K$, mean-reversion rates $\theta\in\mathbb{R}_{>0}^K$, and base volatilities $\sigma_0\in\mathbb{R}_{>0}^K$.
 
 Each component $k$ is the OU SDE
 $$
@@ -87,6 +87,6 @@ $$
 - **PINAW** (sharpness): mean $90\%$-PI width normalized by the observed range.
 - **Winkler / interval score** at level $\alpha$: $W = (u-l) + \tfrac{2}{1-\alpha}\big[(l-y)\mathbb{1}\{y<l\} + (y-u)\mathbb{1}\{y>u\}\big]$.
 - **Forecast skill**: $\mathrm{FS}=1-\mathrm{CRPS}_{\text{model}}/\mathrm{CRPS}_{\text{smart-pers}}$.
-- **Diebold–Mariano**: $\mathrm{DM}=\bar d/\sqrt{\widehat{\mathrm{Var}}(\bar d)}$ on the CRPS loss differential $d_i$, asymptotically $\mathcal{N}(0,1)$.
-- **PIT**: $u_i=F_i(y_i)$; calibration $\Leftrightarrow$ $\{u_i\}\sim\mathrm{Unif}[0,1]$, tested by Kolmogorov–Smirnov.
+- **Diebold-Mariano**: $\mathrm{DM}=\bar d/\sqrt{\widehat{\mathrm{Var}}(\bar d)}$ on the CRPS loss differential $d_i$, asymptotically $\mathcal{N}(0,1)$.
+- **PIT**: $u_i=F_i(y_i)$; calibration $\Leftrightarrow$ $\{u_i\}\sim\mathrm{Unif}[0,1]$, tested by Kolmogorov-Smirnov.
 - **Reliability / ECE**: mean absolute gap between nominal and empirical coverage across levels $\{0.5,\dots,0.95\}$.

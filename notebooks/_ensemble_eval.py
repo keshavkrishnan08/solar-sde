@@ -71,7 +71,7 @@ print("[OK] rollout artifacts stashed.")
 
 
 CHAMPION_SELECT_CODE = '''\
-# ==== Champion selection (ON VALIDATION — legitimate model selection) ====
+# ==== Champion selection (ON VALIDATION: legitimate model selection) ====
 # Evaluates closed-form, rollout, and their ensemble on the VALIDATION split at
 # the SkyGPT horizon (15 min), picks the lowest val CRPS, and restores that
 # variant's artifacts as the canonical mdn_v2_best.pt / solar_sde_main_results.csv
@@ -90,7 +90,7 @@ _RO_CKPT = CHECKPOINT_DIR / "mdn_rollout_best.pt"
 have_cf = _CF_CKPT.exists(); have_ro = _RO_CKPT.exists()
 print(f"  closed-form ckpt: {have_cf} | rollout ckpt: {have_ro}")
 if not (have_cf or have_ro):
-    raise RuntimeError("No trained model found — both STAGE 0 runs failed.")
+    raise RuntimeError("No trained model found, both STAGE 0 runs failed.")
 
 def _load_model(kind):
     if kind == "closedform":
@@ -146,7 +146,7 @@ if have_cf and have_ro:
     # is stronger. We search the mixing weight w (fraction of samples drawn from
     # the closed-form model) that MINIMIZES val CRPS at the selection horizon,
     # then use that weight everywhere. w=1 recovers closed-form, w=0 recovers
-    # rollout — so the ensemble can never be worse than the better single model.
+    # rollout: so the ensemble can never be worse than the better single model.
     M = ys_cf.shape[1]
     _best_w, _best_c = 0.5, 1e9
     for w in np.linspace(0.0, 1.0, 11):
@@ -203,7 +203,7 @@ print(f"  ensemble weight for benchmark: w(closed-form)={ENSEMBLE_W:.2f}")
 
 
 SKYGPT_TRIPLE_BENCHMARK_CODE = '''\
-# ==== SkyGPT exact benchmark — ALL variants (closed-form, rollout, ensemble) ====
+# ==== SkyGPT exact benchmark: ALL variants (closed-form, rollout, ensemble) ====
 # Same protocol as the single-model SkyGPT stage: train on SKIPP'D benchmark
 # release (2017-03..2019-10), test on SkyGPT's identical Nov-Dec 2019 cloudy
 # file (zero leakage), CRPS/Winkler in kW, 90% PI, full 1-30 min band.
@@ -226,7 +226,7 @@ pv_pred = _hf["test/pv_pred"][:].astype(np.float32)
 sky_times = np.load(SKYGPT_DIR / "times_curr_test_2019nov_dec.npy", allow_pickle=True)
 N_SKY = len(sky_times)
 print("=" * 70)
-print(f"SkyGPT EXACT BENCHMARK — all variants ({N_SKY} windows, 5 cloudy days)")
+print(f"SkyGPT EXACT BENCHMARK, all variants ({N_SKY} windows, 5 cloudy days)")
 print("=" * 70)
 
 # clear-sky lookup (reuse PREP's envelope if present)
@@ -397,7 +397,7 @@ if _best_ours is not None:
         print(f"\\n  >>> {_best_ours.method} BEATS SkyGPT: {_best_ours.crps_kW:.3f} < 2.81 kW <<<")
     else:
         _gap = 100 * (_best_ours.crps_kW - 2.81) / 2.81
-        print(f"\\n  best ours = {_best_ours.crps_kW:.3f} kW vs SkyGPT 2.81 ({_gap:+.1f}%) — "
+        print(f"\\n  best ours = {_best_ours.crps_kW:.3f} kW vs SkyGPT 2.81 ({_gap:+.1f}%), "
               f"report honestly; the multi-horizon/calibration contributions stand regardless.")
 print("  -> saved skygpt_benchmark_all_variants.csv, skygpt_headline_h15_all.csv")
 for m in _models.values(): del m

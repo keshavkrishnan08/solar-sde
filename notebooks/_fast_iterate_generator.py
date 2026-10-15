@@ -33,7 +33,7 @@ import torch
 try:
     import torch._utils, torch._dynamo  # noqa: F401
 except Exception as _e:
-    print(f"[WARN] dynamo warmup: {_e} — continuing")
+    print(f"[WARN] dynamo warmup: {_e}, continuing")
 import torch.nn as nn, torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from tqdm import tqdm
@@ -44,7 +44,7 @@ IN_COLAB = "google.colab" in sys.modules
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Kaggle={IN_KAGGLE} Colab={IN_COLAB} device={DEVICE}")
 if DEVICE.type != "cuda":
-    print("[WARN] No GPU — enable a GPU runtime.")
+    print("[WARN] No GPU, enable a GPU runtime.")
 
 ROOT = (Path("/kaggle/working") if IN_KAGGLE else Path.cwd()) / "fast_run"
 PERSIST_DIR = ROOT / "outputs"; WORK_DIR = ROOT / "work"; DATA_DIR = WORK_DIR / "data"
@@ -54,7 +54,7 @@ EXTENDED_DIR = PERSIST_DIR / "extended"; FIGURES_DIR = PERSIST_DIR / "figures"
 for d in [DATA_DIR, CHECKPOINT_DIR, RESULTS_DIR, LATENT_DIR, SPLITS_DIR, EXTENDED_DIR, FIGURES_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
-# ===== Config — iterate on these =====
+# ===== Config: iterate on these =====
 Z_DIM = 64
 SKIPPD_VAE_EPOCHS = 12     # CS-VAE (cached after first run if you attach outputs)
 CLOSEDFORM_EPOCHS = 60     # the knob you'll mostly tune
@@ -68,7 +68,7 @@ ARCH = "base"              # which architecture to train + benchmark on SkyGPT.
                            #   gru    GRU encoder    (different temporal bias)
 MOTION_GRID = 1            # SPATIAL cloud-motion features (the real beat-attempt):
                            #   1 = global-mean optical flow (4 dims, current)
-                           #   3 = 3x3 grid-pooled flow (27 dims) — keeps WHERE clouds
+                           #   3 = 3x3 grid-pooled flow (27 dims): keeps WHERE clouds
                            #       move toward the sun, the spatial signal SkyGPT uses
                            #   4 = 4x4 grid (48 dims)
                            # Sweep ARCH x MOTION_GRID; if a combo beats 2.81 at h=15,
@@ -77,7 +77,7 @@ SEED_ENSEMBLE     = 1      # >1 = deep ensemble: train this many closed-form mod
                            # with different seeds and pool their samples. The one
                            # legitimate lever with a real shot at beating SkyGPT
                            # (deep ensembles reliably cut CRPS ~5-12%). Costs
-                           # SEED_ENSEMBLE x ~85 min — set 3 when you want the real try.
+                           # SEED_ENSEMBLE x ~85 min: set 3 when you want the real try.
 
 # Reuse a cached VAE/latents from an attached Kaggle dataset to skip ~25 min.
 if IN_KAGGLE and Path("/kaggle/input").exists():
@@ -86,7 +86,7 @@ if IN_KAGGLE and Path("/kaggle/input").exists():
             for sub in ["checkpoints", "latents", "splits", "extended"]:
                 s = ds / sub
                 if s.exists(): shutil.copytree(s, PERSIST_DIR / sub, dirs_exist_ok=True)
-            print(f"  reused cached VAE/latents from {ds.name} — VAE+motion will skip")
+            print(f"  reused cached VAE/latents from {ds.name}, VAE+motion will skip")
 print(f"Config: VAE={SKIPPD_VAE_EPOCHS}ep, closed-form={CLOSEDFORM_EPOCHS}ep, rollout={TRAIN_ROLLOUT}")
 print(f"PERSIST_DIR={PERSIST_DIR}")
 '''
@@ -108,10 +108,10 @@ FAST_CLONE_CODE = CLONE_AND_IMPORT_CODE.replace(
 def nb_fast():
     cells = [
         ("markdown",
-         "# SolarSDE — Fast Iteration Notebook\n\n"
+         "# SolarSDE, Fast Iteration Notebook\n\n"
          "Lean loop for tuning the model: **data → closed-form train → all-horizon results "
          "+ SkyGPT head-to-head.** No rollout (unless `TRAIN_ROLLOUT=True`), no baselines/ablations/"
-         "CV/economics — those live in `11_final_publication.ipynb`.\n\n"
+         "CV/economics, those live in `11_final_publication.ipynb`.\n\n"
          "**Produces:** all-weather per-horizon CRPS/PICP (STAGE 0) and the SkyGPT exact-cloudy-test "
          "per-horizon CRPS/Winkler + h=15 head-to-head vs the published 2.81. ~1.5 h/run on a T4.\n\n"
          "Code pulled live from github.com/keshavkrishnan08/SDE."),
@@ -146,10 +146,10 @@ def nb_fast():
                            "     STAGE_0_V2_CODE.replace('EPOCHS = 60', f'EPOCHS = {CLOSEDFORM_EPOCHS}')), globals())")),
         ("code", _cell("CLOSEDFORM_VERIFY", "POST_STAGE0_V2_VERIFY_CODE")),
 
-        ("markdown", "## 8. (optional) Rollout variant + ensemble — only if TRAIN_ROLLOUT"),
+        ("markdown", "## 8. (optional) Rollout variant + ensemble, only if TRAIN_ROLLOUT"),
         ("code", _cell_raw("OPTIONAL_ROLLOUT",
                            "if not globals().get('TRAIN_ROLLOUT', False):\n"
-                           "    print('[SKIP] TRAIN_ROLLOUT=False — closed-form only (fast path).')\n"
+                           "    print('[SKIP] TRAIN_ROLLOUT=False, closed-form only (fast path).')\n"
                            "else:\n"
                            "    exec(safe_stage('STASH_CLOSEDFORM', STASH_CLOSEDFORM_CODE), globals())\n"
                            "    exec(safe_stage('ROLLOUT_ARCH', ROLLOUT_ARCH_CODE), globals())\n"
@@ -158,10 +158,10 @@ def nb_fast():
                            "    exec(safe_stage('STASH_ROLLOUT', STASH_ROLLOUT_CODE), globals())\n"
                            "    exec(safe_stage('CHAMPION_SELECT', CHAMPION_SELECT_CODE), globals())")),
 
-        ("markdown", "## 8b. (optional) Deep ensemble — train K seeds (the real lever; SEED_ENSEMBLE>1)"),
+        ("markdown", "## 8b. (optional) Deep ensemble, train K seeds (the real lever; SEED_ENSEMBLE>1)"),
         ("code", _cell("DEEP_ENSEMBLE", "DEEP_ENSEMBLE_CODE")),
 
-        ("markdown", "## 9. SkyGPT exact-benchmark — all horizons + h=15 head-to-head"),
+        ("markdown", "## 9. SkyGPT exact-benchmark, all horizons + h=15 head-to-head"),
         ("code", _cell_raw("SKYGPT",
                            "# triple benchmark if rollout trained, else single-model on the champion\n"
                            "if globals().get('TRAIN_ROLLOUT', False) and (CHECKPOINT_DIR/'mdn_rollout_best.pt').exists():\n"
@@ -169,7 +169,7 @@ def nb_fast():
                            "else:\n"
                            "    exec(safe_stage('SKYGPT', SKYGPT_BENCHMARK_CODE), globals())")),
 
-        ("markdown", "## 9b. Idea SWEEP — post-hoc knobs (val-selected + test-oracle diagnostic)"),
+        ("markdown", "## 9b. Idea SWEEP, post-hoc knobs (val-selected + test-oracle diagnostic)"),
         ("code", _cell("SKYGPT_SWEEP", "SKYGPT_SWEEP_CODE")),
 
         ("markdown", "## 10. Save results"),

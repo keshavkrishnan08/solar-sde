@@ -42,10 +42,10 @@ across levels is 0.024 (averaged over horizons); representative values:
 Empirical coverage tracks the diagonal across the curve (Fig. 5); the largest deviations
 are ≤0.05, concentrated at the longest horizon.
 
-## B.3 Significance: HAC Diebold: Mariano + Holm–Bonferroni
-**Table B.3.** HAC (Newey–West, bandwidth = *h*−1) Diebold–Mariano statistic on the CRPS
-loss differential, with the Harvey–Leybourne–Newbold small-sample factor, vs persistence
-and smart persistence; Holm–Bonferroni decision at family-wise error 0.05 across the
+## B.3 Significance: HAC Diebold: Mariano + Holm: Bonferroni
+**Table B.3.** HAC (Newey-West, bandwidth = *h*−1) Diebold-Mariano statistic on the CRPS
+loss differential, with the Harvey-Leybourne-Newbold small-sample factor, vs persistence
+and smart persistence; Holm-Bonferroni decision at family-wise error 0.05 across the
 6 × 2 family. The HAC bandwidth covers the overlap of consecutive 1-min forecast windows.
 
 | *h* (min) | vs persistence (DM, *p*) | vs smart-pers (DM, *p*) | Holm sig.? |
@@ -57,7 +57,7 @@ and smart persistence; Holm–Bonferroni decision at family-wise error 0.05 acro
 | 20 | −13.4, <10⁻⁶ | −2.9, 3.9×10⁻³ | ✓ both |
 | 30 | −13.8, <10⁻⁶ | −2.8, 5.3×10⁻³ | ✓ both |
 
-**All 12 comparisons remain significant after Holm–Bonferroni correction**, including the
+**All 12 comparisons remain significant after Holm-Bonferroni correction**, including the
 autocorrelation-robust test against the strong smart-persistence baseline. The advantage
 over smart persistence narrows at long horizons (as expected, since both converge toward
 climatology) but stays significant.

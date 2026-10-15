@@ -116,7 +116,7 @@ GITHUB_RAW = "https://raw.githubusercontent.com/keshavkrishnan08/SDE/main"
 
 need_nb1_outputs = not (CHECKPOINT_DIR / "vae_best.pt").exists() or not any(LATENT_DIR.glob("train_*.npy"))
 if need_nb1_outputs:
-    print("Notebook 1 outputs not found in persistent storage — pulling from GitHub ...")
+    print("Notebook 1 outputs not found in persistent storage, pulling from GitHub ...")
     import requests
     files_to_pull = [
         ("checkpoints/vae_best.pt",          CHECKPOINT_DIR / "vae_best.pt"),
@@ -161,7 +161,7 @@ if torch.cuda.is_available():
     torch.backends.cudnn.benchmark = True
 else:
     DEVICE = torch.device("cpu")
-    print("WARNING: Running on CPU — will be slow. Change Runtime > Change runtime type > GPU")
+    print("WARNING: Running on CPU, will be slow. Change Runtime > Change runtime type > GPU")
 print(f"Using device: {DEVICE}")
 """
 
@@ -531,7 +531,7 @@ import time
 IMG_SIZE = 128
 LATENT_DIM = 64
 BATCH = 32
-EPOCHS = 20           # trimmed from 100 — sufficient for 128x128 with this dataset size
+EPOCHS = 20           # trimmed from 100, sufficient for 128x128 with this dataset size
 LR = 1e-4
 SEED = 42
 
@@ -865,7 +865,7 @@ Z_MEAN = torch.from_numpy(_train_Z_np.mean(0)).float().to(DEVICE)
 Z_STD_RAW = torch.from_numpy(_train_Z_np.std(0)).float().to(DEVICE) + 1e-6
 # Enforce minimum clamp width of 0.25 per dim so long-horizon rollouts aren't frozen
 Z_STD = torch.maximum(Z_STD_RAW, torch.full_like(Z_STD_RAW, 0.05))
-Z_CLAMP_STDS = 8.0   # loosened from 4.0 — prevents sample collapse to boundary at long horizons
+Z_CLAMP_STDS = 8.0   # loosened from 4.0, prevents sample collapse to boundary at long horizons
 MU_CAP = 10.0        # loosened from 5.0
 SIGMA_CAP = 5.0      # loosened from 2.0
 
@@ -909,7 +909,7 @@ if IN_COLAB:
     except Exception as e:
         print(f"Auto-download unavailable: {e}. Download manually from {zip_path}")
 else:
-    print(f"Archive at: {zip_path}  — download via Kaggle output tab or file browser.")
+    print(f"Archive at: {zip_path}, download via Kaggle output tab or file browser.")
 '''
 
 
@@ -919,7 +919,7 @@ else:
 
 def nb1():
     cells = [
-        ("markdown", """# SolarSDE Notebook 1 — Data & CS-VAE Training
+        ("markdown", """# SolarSDE Notebook 1, Data & CS-VAE Training
 
 **Runtime:** ~4-6 hours on Colab T4 / Kaggle P100 (well under 8hr limit)
 
@@ -931,7 +931,7 @@ def nb1():
 5. Saves all outputs to Google Drive (Colab) or /kaggle/working (Kaggle)
 
 **Outputs** (saved to `solarsde_outputs/` in persistent storage):
-- `splits/{train,val,test}.parquet` — preprocessed data with metadata
+- `splits/{train,val,test}.parquet`, preprocessed data with metadata
 - `checkpoints/vae_best.pt`, `vae_final.pt`
 - `latents/{train,val,test}_{latents,cti,ghi,covariates,is_ramp}.npy`
 - `results/vae_training_history.csv`
@@ -953,7 +953,7 @@ def nb1():
         ("code", VAE_MODEL),
         ("markdown", "## 5. Image dataset"),
         ("code", IMAGE_DATASET),
-        ("markdown", "## 6. Train CS-VAE\nWe use 128×128 images and 20 epochs (trimmed from 100 — empirically sufficient for this dataset size with 2.5M parameters)."),
+        ("markdown", "## 6. Train CS-VAE\nWe use 128×128 images and 20 epochs (trimmed from 100, empirically sufficient for this dataset size with 2.5M parameters)."),
         ("code", VAE_TRAIN),
         ("markdown", "## 7. Extract latents and compute CTI\nRun frozen VAE over all splits. CTI = L2 norm of variance of latent velocity over a 10-frame window."),
         ("code", LATENT_EXTRACT),
@@ -962,11 +962,11 @@ def nb1():
         ("markdown", """## Summary
 
 You should now see in persistent storage:
-- `splits/` — train/val/test parquet files
-- `checkpoints/vae_best.pt` — trained CS-VAE
-- `latents/` — encoded latents + CTI + GHI + covariates for all splits
+- `splits/`, train/val/test parquet files
+- `checkpoints/vae_best.pt`, trained CS-VAE
+- `latents/`, encoded latents + CTI + GHI + covariates for all splits
 
-**Next:** run Notebook 2 — it will read from these files and train the Neural SDE and Score Decoder.
+**Next:** run Notebook 2: it will read from these files and train the Neural SDE and Score Decoder.
 """),
         ("code", """# ==== Final summary ====
 print("=" * 70)
@@ -989,7 +989,7 @@ print("Next: open 02_sde_score_main.ipynb")
 
 def nb2():
     cells = [
-        ("markdown", """# SolarSDE Notebook 2 — Neural SDE + Score Decoder + Main Evaluation
+        ("markdown", """# SolarSDE Notebook 2, Neural SDE + Score Decoder + Main Evaluation
 
 **Runtime:** ~1-2 hours on Colab T4 / Kaggle P100
 
@@ -1005,7 +1005,7 @@ def nb2():
         ("code", INSTALL_DEPS),
         ("code", ENV_SETUP),
         ("code", GPU_CHECK),
-        ("markdown", "## Fast-start — pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
+        ("markdown", "## Fast-start, pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
         ("code", GITHUB_FAST_START),
         ("markdown", "## 1. Load latents from Notebook 1"),
         ("code", """import numpy as np, pandas as pd
@@ -1103,7 +1103,7 @@ print(f"Score Decoder params: {sum(p.numel() for p in score.parameters()):,}")
 
 train_loader = DataLoader(train_ds, batch_size=256, shuffle=True, drop_last=True)
 val_loader   = DataLoader(val_ds,   batch_size=256, shuffle=False)
-EPOCHS_SCORE = 150   # increased from 40 — DDPMs need more training than typical supervised models
+EPOCHS_SCORE = 150   # increased from 40, DDPMs need more training than typical supervised models
 sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=EPOCHS_SCORE, eta_min=1e-5)
 
 best_val = float("inf"); t0 = time.time(); hist = []
@@ -1210,7 +1210,7 @@ print("Next: 03_baselines.ipynb to train comparison methods.")
 
 def nb3():
     cells = [
-        ("markdown", """# SolarSDE Notebook 3 — Baselines
+        ("markdown", """# SolarSDE Notebook 3, Baselines
 
 **Runtime:** ~2-4 hours on Colab T4 / Kaggle P100
 
@@ -1228,7 +1228,7 @@ Each baseline is evaluated at the same 5 horizons (1, 5, 10, 20, 30 min) and com
         ("code", INSTALL_DEPS),
         ("code", ENV_SETUP),
         ("code", GPU_CHECK),
-        ("markdown", "## Fast-start — pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
+        ("markdown", "## Fast-start, pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
         ("code", GITHUB_FAST_START),
         ("markdown", "## 1. Load data + config"),
         ("code", """import numpy as np, pandas as pd
@@ -1255,7 +1255,7 @@ val_df   = pd.read_parquet(SPLITS_DIR / "val.parquet")
 test_df  = pd.read_parquet(SPLITS_DIR / "test.parquet")
 
 # Extended 90-day BMS dataset for training deep baselines (12x more data,
-# no images needed — pulls automatically from GitHub via fast-start below)
+# no images needed: pulls automatically from GitHub via fast-start below)
 EXTENDED_DIR = PERSIST_DIR / "extended"
 EXTENDED_DIR.mkdir(parents=True, exist_ok=True)
 # Fetch extended parquets if not present
@@ -1371,7 +1371,7 @@ def build_seq_tensors(df, seq_len, horizons):
 
 # Deep baselines train on the EXTENDED 90-day BMS dataset (12x more data)
 # but evaluate on the IMAGE test set for apples-to-apples comparison with SolarSDE.
-# Extended BMS is 1-minute resolution vs image 10s — for the baselines we downsample
+# Extended BMS is 1-minute resolution vs image 10s: for the baselines we downsample
 # BMS to match image resolution by keeping every 6th BMS row (approximates 10s snapshots).
 def downsample_to_10s(df):
     return df.iloc[::6].reset_index(drop=True) if len(df) > 0 else df
@@ -1690,7 +1690,7 @@ print("Next: 04_ablations.ipynb")
 
 def nb4():
     cells = [
-        ("markdown", """# SolarSDE Notebook 4 — Ablation Study
+        ("markdown", """# SolarSDE Notebook 4, Ablation Study
 
 **Runtime:** ~3-5 hours on Colab T4 / Kaggle P100
 
@@ -1706,7 +1706,7 @@ Each ablation re-trains the relevant component(s) and evaluates at the same 5 ho
         ("code", INSTALL_DEPS),
         ("code", ENV_SETUP),
         ("code", GPU_CHECK),
-        ("markdown", "## Fast-start — pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
+        ("markdown", "## Fast-start, pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
         ("code", GITHUB_FAST_START),
         ("code", """import numpy as np, pandas as pd
 import torch, torch.nn as nn, torch.nn.functional as F
@@ -1750,7 +1750,7 @@ print(f"Z_DIM={Z_DIM}, C_DIM={C_DIM}, N_EVAL={N_EVAL}")
 tr_ds = LatentSeqDataset(data["train"])
 va_ds = LatentSeqDataset(data["val"])
 """),
-        ("markdown", "## A2 — SolarSDE minus CTI gating"),
+        ("markdown", "## A2, SolarSDE minus CTI gating"),
         ("code", """# No-CTI variant: diffusion conditioned on constant zero CTI (ablates the gating mechanism)
 print("=" * 70)
 print("A2: SolarSDE without CTI gating")
@@ -1817,7 +1817,7 @@ for h in HORIZONS:
 df_a2 = pd.DataFrame.from_dict(res_a2, orient="index").sort_values("horizon_min")
 df_a2.to_csv(RESULTS_DIR / "ablation_a2_no_cti.csv", index=False)
 """),
-        ("markdown", "## A4 — SolarSDE minus Score Matching (linear decoder)"),
+        ("markdown", "## A4, SolarSDE minus Score Matching (linear decoder)"),
         ("code", """# Train a linear z→GHI decoder with Gaussian residual noise for probabilistic output
 print("=" * 70)
 print("A4: SolarSDE without Score Matching (linear decoder)")
@@ -1891,7 +1891,7 @@ for h in HORIZONS:
 df_a4 = pd.DataFrame.from_dict(res_a4, orient="index").sort_values("horizon_min")
 df_a4.to_csv(RESULTS_DIR / "ablation_a4_no_score.csv", index=False)
 """),
-        ("markdown", "## A5 — SolarSDE minus Neural SDE (deterministic ODE: σ ≡ 0)"),
+        ("markdown", "## A5, SolarSDE minus Neural SDE (deterministic ODE: σ ≡ 0)"),
         ("code", """print("=" * 70)
 print("A5: SolarSDE deterministic (Neural ODE, σ=0)")
 print("=" * 70)
@@ -1995,7 +1995,7 @@ print("Next: 05_analysis_figures.ipynb")
 
 def nb5():
     cells = [
-        ("markdown", """# SolarSDE Notebook 5 — Multi-Seed Runs, CTI Analysis, Economic Value, Figures
+        ("markdown", """# SolarSDE Notebook 5, Multi-Seed Runs, CTI Analysis, Economic Value, Figures
 
 **Runtime:** ~2-4 hours on Colab T4 / Kaggle P100
 
@@ -2013,7 +2013,7 @@ def nb5():
         ("code", INSTALL_DEPS),
         ("code", ENV_SETUP),
         ("code", GPU_CHECK),
-        ("markdown", "## Fast-start — pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
+        ("markdown", "## Fast-start, pull Notebook 1 outputs from GitHub (skips VAE retraining)"),
         ("code", GITHUB_FAST_START),
         ("code", """import numpy as np, pandas as pd
 import torch, torch.nn as nn, torch.nn.functional as F
@@ -2122,7 +2122,7 @@ def eval_pair(sde_m, score_m):
 """),
         ("markdown", "## 1. Multi-seed training & evaluation (seeds 123, 456)"),
         ("code", """all_results = {}
-# Seed 42 was used in Notebook 2 — reload that result
+# Seed 42 was used in Notebook 2: reload that result
 s42 = pd.read_csv(RESULTS_DIR / "solar_sde_main_results.csv")
 all_results[42] = s42.set_index("horizon_min").to_dict(orient="index")
 
@@ -2135,7 +2135,7 @@ for seed in [123, 456]:
     res_s = eval_pair(sde_s, score_s)
     all_results[seed] = {HORIZON_MIN[h]: {k: v for k, v in r.items() if not k.startswith("_")}
                         for h, r in res_s.items()}
-    # Also save raw samples for analysis (only seed 42 for space — use loaded result)
+    # Also save raw samples for analysis (only seed 42 for space, use loaded result)
     if seed == 42: pass
 
 # Build 3-seed aggregate table
@@ -2161,7 +2161,7 @@ print("\\nStds:"); print(pivot_std.to_string())
         ("markdown", """## 1b. Post-hoc conformal calibration
 
 The raw Neural SDE forecasts are sharp but under-dispersed (PICP ~0.5 instead of 0.9)
-— a known pathology of SDE Matching on near-continuous latent dynamics. We fix this
+, a known pathology of SDE Matching on near-continuous latent dynamics. We fix this
 with split-conformal prediction: widen the interval half-width by the validation-set
 residual quantile so that test coverage matches the nominal 90%.
 """),
@@ -2521,7 +2521,7 @@ except Exception as e:
     print(f"Skipping table 2: {e}")
 """),
         ("code", ZIP_AND_DOWNLOAD),
-        ("code", """print("=" * 70); print("NOTEBOOK 5 COMPLETE — FULL EXPERIMENT PIPELINE DONE"); print("=" * 70)
+        ("code", """print("=" * 70); print("NOTEBOOK 5 COMPLETE, FULL EXPERIMENT PIPELINE DONE"); print("=" * 70)
 print("All results in:", PERSIST_DIR)
 for sub in ["splits", "checkpoints", "results", "latents", "figures"]:
     p = PERSIST_DIR / sub

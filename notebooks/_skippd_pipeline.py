@@ -53,7 +53,7 @@ for rel in SKIPPD_FILES:
 n_have = sum(1 for r in SKIPPD_FILES if (SKIPPD_DIR / r).exists())
 print(f"SKIPP'D files present: {n_have}/{len(SKIPPD_FILES)}")
 if n_have < len(SKIPPD_FILES):
-    raise RuntimeError("SKIPP'D download incomplete — re-run this cell.")
+    raise RuntimeError("SKIPP'D download incomplete, re-run this cell.")
 '''
 
 
@@ -213,7 +213,7 @@ try:
 except Exception:
     import subprocess as _sp; _sp.run([sys.executable, "-m", "pip", "install", "-q", "opencv-python-headless"]); import cv2 as _cv2
 # MOTION_GRID: 1 = global-mean flow (4-dim, default). G>1 = GxG grid-pooled flow
-# (3*G*G dims) that KEEPS where clouds move toward the sun — the spatial signal a
+# (3*G*G dims) that KEEPS where clouds move toward the sun, the spatial signal a
 # global mean throws away. Set MOTION_GRID=3 or 4 in notebook 12 to test it.
 MOTION_GRID = int(globals().get("MOTION_GRID", 1))
 _H = 64; _cy, _cx = _H // 2, _H // 2; _r2 = (_H // 4) ** 2
@@ -326,7 +326,7 @@ except Exception:
 
 
 SKIPPD_HORIZON_OVERRIDE_CODE = '''\
-# ==== SKIPP'D cadence override (1-min) — run AFTER LOAD_DATA_TOLERANT_CODE ====
+# ==== SKIPP'D cadence override (1-min): run AFTER LOAD_DATA_TOLERANT_CODE ====
 # SKIPP'D is 1-minute cadence, so horizons are 1-min steps and PRIMARY_DT=60s.
 # (CloudCV was 10s steps / PRIMARY_DT=10.) The architecture's h_norm=h/180 is a
 # fixed normalization constant and stays consistent across the dataset + eval.

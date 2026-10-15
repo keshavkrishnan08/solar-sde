@@ -31,7 +31,7 @@ def safe_stage(name: str, code: str) -> str:
         f"    print(f'[STAGE FAILED] {name}: "
         f"{{type(_e_safe_stage).__name__}}: {{_e_safe_stage}}')\n"
         f"    _tb_safe_stage.print_exc()\n"
-        f"    print(f'[STAGE FAILED] {name} skipped — continuing.')\n"
+        f"    print(f'[STAGE FAILED] {name} skipped, continuing.')\n"
         f"    print('!' * 70 + '\\n')\n"
     )
 
@@ -43,7 +43,7 @@ def safe_stage(name: str, code: str) -> str:
 #   - Reports free disk so the user catches an unwriteable session early
 # ============================================================
 PREFLIGHT_SANITY_CODE = '''\
-# ==== PREFLIGHT — sanity check before any heavy work ====
+# ==== PREFLIGHT: sanity check before any heavy work ====
 import shutil as _shutil
 _required_names = [
     # Gates + checkpoint paths from FAST_START
@@ -83,7 +83,7 @@ for _name, _p in [("vae",   CHECKPOINT_DIR / "vae_best.pt"),
         _corrupt.append((_name, _p, f"torch.load failed: {_e}"))
 if _corrupt:
     for _n, _p, _r in _corrupt:
-        print(f"  [WARN] corrupt checkpoint {_n} at {_p}: {_r} — deleting.")
+        print(f"  [WARN] corrupt checkpoint {_n} at {_p}: {_r}, deleting.")
         try: _p.unlink()
         except Exception: pass
     NEED_NB2_TRAINING = not (SDE_CKPT.exists() and SCORE_CKPT.exists())
@@ -94,7 +94,7 @@ try:
     _free_gb = _shutil.disk_usage(str(WORK_DIR)).free / 1e9
     print(f"  Free disk @ WORK_DIR : {_free_gb:.1f} GB")
     if _free_gb < 5:
-        print(f"  [WARN] Less than 5 GB free — training/checkpoint saves may fail.")
+        print(f"  [WARN] Less than 5 GB free, training/checkpoint saves may fail.")
 except Exception:
     pass
 print("PREFLIGHT: all required names present.")
@@ -126,11 +126,11 @@ for _name, _p in [("sde", SDE_CKPT), ("score", SCORE_CKPT)]:
 if _bad:
     for _n, _k in _bad:
         _p = SDE_CKPT if _n == "sde" else SCORE_CKPT
-        print(f"  [FAIL] NaN/Inf in {_n} ckpt tensor {_k!r} — deleting {_p}")
+        print(f"  [FAIL] NaN/Inf in {_n} ckpt tensor {_k!r}, deleting {_p}")
         _p.unlink()
     raise RuntimeError(
         f"STAGE 0 trained corrupt checkpoints (NaN weights). "
-        f"Bad ckpts deleted. Re-run STAGE 0 — usual fix is to lower lr "
+        f"Bad ckpts deleted. Re-run STAGE 0, usual fix is to lower lr "
         f"(currently 1e-4 for SDE, 2e-4 for Score) or check for NaN in "
         f"data/Z_MEAN/Z_STD.")
 print("[OK] STAGE 0 checkpoints verified (no NaN/Inf weights).")
@@ -178,7 +178,7 @@ if SDE_CKPT.exists():
             if not _f.exists(): continue
             _arr = np.load(_f)
             if _arr.size == 0 or not (_arr == 0).all():
-                continue   # real (non-zero) features — leave them alone
+                continue   # real (non-zero) features, leave them alone
             _orig = np.load(LATENT_DIR / f"{_s}_covariates.npy")
             _phys = np.load(LATENT_DIR / f"{_s}_physics_features.npy")
             _base_dim = _orig.shape[1] + _phys.shape[1]
@@ -197,7 +197,7 @@ if SDE_CKPT.exists():
 _have_feats = all((LATENT_DIR / f"{s}_image_features.npy").exists()
                   for s in ["train", "val", "test"])
 if _have_feats:
-    print("[OK] image_features.npy present for all splits — STAGE -1 will skip.")
+    print("[OK] image_features.npy present for all splits, STAGE -1 will skip.")
 else:
     _data_cv  = DATA_DIR / "cloudcv"   # Golden-retrain writes here
     _work_cv  = WORK_DIR / "cloudcv"   # STAGE_MINUS1_CODE reads here
@@ -207,7 +207,7 @@ else:
         print(f"[OK] STAGE -1 will find {len(_work_imgs)} images at WORK_DIR/cloudcv.")
     elif _data_imgs:
         print(f"[FIX] Bridging path mismatch: {len(_data_imgs)} images in "
-              f"DATA_DIR/cloudcv — symlinking into WORK_DIR/cloudcv ...")
+              f"DATA_DIR/cloudcv, symlinking into WORK_DIR/cloudcv ...")
         _work_cv.mkdir(parents=True, exist_ok=True)
         for _day in _data_cv.iterdir():
             if _day.is_dir():
@@ -221,7 +221,7 @@ else:
         print("[FIX] Symlinks created.")
     else:
         print("[WARN] No CloudCV images found in DATA_DIR/cloudcv or "
-              "WORK_DIR/cloudcv — writing zero-fill image_features.npy so "
+              "WORK_DIR/cloudcv, writing zero-fill image_features.npy so "
               "STAGE -1 skips. Paper will report 0 image features.")
         for _split in ["train", "val", "test"]:
             _n = len(pd.read_parquet(SPLITS_DIR / f"{_split}.parquet"))

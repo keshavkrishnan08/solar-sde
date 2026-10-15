@@ -17,7 +17,7 @@
 | *w* | persistence-blend weight |
 | *s*ₕ | conformal scale at horizon *h* |
 | Φ, φ | standard normal cdf, pdf |
-| *Abbreviations:* | CRPS, PICP, PINAW, PIT, DM (Diebold–Mariano), VAE, SDE, OU (Ornstein–Uhlenbeck), CV |
+| *Abbreviations:* | CRPS, PICP, PINAW, PIT, DM (Diebold-Mariano), VAE, SDE, OU (Ornstein-Uhlenbeck), CV |
 
 ## 5. Discussion
 
@@ -30,7 +30,7 @@
 **Deployability.** At 0.43 M parameters and ≈4 ms per forecast, SolarSDE runs at the edge, beside the inverter at distributed PV assets, where a generative video pipeline cannot. For the distributed-solar setting this is a qualitative, not incremental, difference.
 
 ## 6. Conclusions
-We introduced SolarSDE, a cloud-turbulence-gated latent neural stochastic differential equation for probabilistic PV nowcasting. By modelling the clear-sky-index residual as the closed-form marginal of a CTI-gated mixture of Ornstein–Uhlenbeck processes, anchored to persistence and calibrated by group-conditional conformal prediction, it delivers sharp, verifiably-calibrated forecasts across the full 1-30 minute operational band from a single 0.43 M-parameter model. On the SKIPP'D benchmark it outperforms persistence, smart persistence, LSTM, MC-Dropout and CSDI at every horizon with Diebold–Mariano significance, exhibits well-calibrated coverage and physically-meaningful uncertainty, generates positive reserve value across all tested price scenarios, and is competitive with the heavyweight generative state of the art at its single 15-minute horizon. The result establishes the first calibration-verified, full-band intra-hour probabilistic PV nowcaster, and argues for treating nowcasting as stochastic-process characterization rather than future-image prediction.
+We introduced SolarSDE, a cloud-turbulence-gated latent neural stochastic differential equation for probabilistic PV nowcasting. By modelling the clear-sky-index residual as the closed-form marginal of a CTI-gated mixture of Ornstein-Uhlenbeck processes, anchored to persistence and calibrated by group-conditional conformal prediction, it delivers sharp, verifiably-calibrated forecasts across the full 1-30 minute operational band from a single 0.43 M-parameter model. On the SKIPP'D benchmark it outperforms persistence, smart persistence, LSTM, MC-Dropout and CSDI at every horizon with Diebold-Mariano significance, exhibits well-calibrated coverage and physically-meaningful uncertainty, generates positive reserve value across all tested price scenarios, and is competitive with the heavyweight generative state of the art at its single 15-minute horizon. The result establishes the first calibration-verified, full-band intra-hour probabilistic PV nowcaster, and argues for treating nowcasting as stochastic-process characterization rather than future-image prediction.
 
 ## Appendix C: Implementation and reproducibility
 **Architecture.** CS-VAE: 4-layer conv encoder/decoder (32→256 ch, GroupNorm, SiLU), 64-d latent, β=0.01, 12 epochs, AdamW 1e-3. Forecaster: 2-layer transformer encoder (d=128, 4 heads, GELU, pre-norm) over the 16-step history; per-component linear heads for π/μ/θ/σ; persistence-blend head; CTI diffusion gate. 0.43 M parameters total.

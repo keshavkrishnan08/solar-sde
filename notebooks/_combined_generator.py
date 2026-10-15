@@ -46,7 +46,7 @@ def build_nb(cells):
 # Setup fragments (shared with per-stage notebooks, but consolidated)
 # ================================================================
 
-HEADER_MD = """# SolarSDE Combined Notebook — Baselines + Ablations + Analysis + Figures
+HEADER_MD = """# SolarSDE Combined Notebook, Baselines + Ablations + Analysis + Figures
 
 **Runtime: ~4-6 hours on Kaggle P100 / Colab T4 GPU.** Designed for unattended runs.
 
@@ -60,7 +60,7 @@ HEADER_MD = """# SolarSDE Combined Notebook — Baselines + Ablations + Analysis
 7. Zips everything for download
 
 **Resume-safe:** each major section checks if its output files already exist and skips.
-If your session disconnects, just re-run all cells — already-completed stages will be skipped.
+If your session disconnects, just re-run all cells, already-completed stages will be skipped.
 
 **Kaggle tips:** enable P100 GPU, commit the notebook periodically, free tier is 30hrs/week.
 **Colab tips:** free T4 disconnects on idle; Colab Pro recommended for unattended runs.
@@ -130,7 +130,7 @@ if CLEAN_START_V2:
         if p.exists():
             p.unlink()
             print(f"  removed {p.name}")
-    print("Clean slate ready — Stage 0 will retrain with v2.")
+    print("Clean slate ready, Stage 0 will retrain with v2.")
 
 # ==== GPU setup ====
 import torch, torch.nn as nn, torch.nn.functional as F
@@ -221,7 +221,7 @@ for dest, rel in optional_nb2.items():
 
 # Hard requirement: VAE + latents
 if n_missing > 0:
-    raise RuntimeError(f"{n_missing} required Notebook 1 files missing — cannot proceed.")
+    raise RuntimeError(f"{n_missing} required Notebook 1 files missing, cannot proceed.")
 
 # Notebook 2 artifacts may be in Drive from your recent run, GitHub, or absent.
 # If absent, we will train them inline in Stage 0 below.
@@ -229,7 +229,7 @@ SDE_CKPT = CHECKPOINT_DIR / "sde_best.pt"
 SCORE_CKPT = CHECKPOINT_DIR / "score_best.pt"
 NEED_NB2_TRAINING = not (SDE_CKPT.exists() and SCORE_CKPT.exists())
 if NEED_NB2_TRAINING:
-    print("\\nSDE + Score checkpoints NOT found — will train them inline in Stage 0.")
+    print("\\nSDE + Score checkpoints NOT found, will train them inline in Stage 0.")
 else:
     print(f"\\nSDE + Score checkpoints present.  Skipping Stage 0.")
 print("Ready to run.")
@@ -309,7 +309,7 @@ class LatentNeuralSDE(nn.Module):
 # --- Score Decoder v3 (RESIDUAL prediction: delta_kt = kt(t+h) - kt(t)) ---
 #
 # v2 predicted absolute kt(t+h). For stable conditions where kt(t+h) ≈ kt(t),
-# the model had to learn a near-identity mapping — neural nets are bad at this.
+# the model had to learn a near-identity mapping: neural nets are bad at this.
 #
 # v3 predicts delta_kt = kt(t+h) - kt(t). Targets are concentrated near 0
 # (most timesteps have small change). At sampling time, we add the sampled
@@ -579,7 +579,7 @@ STAGE_MINUS2_CODE = '''\
 # Stanford SKIPP'D: 497 training days of 64x64 sky images from a Stanford rooftop
 # fisheye camera (vs. our 5 days of Golden CO). Much more cloud diversity.
 # Pretraining the VAE on this richer distribution should give latents that
-# generalize better to cloud transitions — exactly what v4 struggles with.
+# generalize better to cloud transitions: exactly what v4 struggles with.
 #
 # This stage is OPTIONAL (set ENABLE_STANFORD_PRETRAIN below to True to run).
 # Adds ~3-4 hours to the notebook but should substantially improve cloud-regime
@@ -783,7 +783,7 @@ else:
 
 STAGE_MINUS1_CODE = '''\
 # ==== STAGE -1: Image feature extraction (optical flow + sun-ROI + cloud fraction) ====
-# This is OPTIONAL — if image_features.npy is present, we skip. Otherwise we either:
+# This is OPTIONAL: if image_features.npy is present, we skip. Otherwise we either:
 #   a) Download the 8 days of CloudCV images from NREL (2.6 GB) + extract features
 #   b) Skip gracefully if download fails (features default to zero)
 #
@@ -931,14 +931,14 @@ else:
             print(f"  [INFO] in-stage reload skipped ({type(_e).__name__}); "
                   f"LOAD_DATA will pick up the new image features next.")
     else:
-        print("  [INFO] LOAD_DATA_TOLERANT_CODE runs next — it will load `data` "
+        print("  [INFO] LOAD_DATA_TOLERANT_CODE runs next, it will load `data` "
               "with the new image features. Skipping inline reload.")
 '''
 
 STAGE0_CODE = '''\
 # ==== STAGE 0: Train SDE + Score Decoder if missing (was Notebook 2) ====
 if not NEED_NB2_TRAINING:
-    print("[SKIP] Stage 0 — SDE + Score checkpoints already present.")
+    print("[SKIP] Stage 0, SDE + Score checkpoints already present.")
 else:
     print("=" * 70)
     print("STAGE 0: Training Neural SDE + Score Decoder (inline)")
@@ -1161,7 +1161,7 @@ else:
         solar_df = pd.read_csv(RESULTS_DIR / "solar_sde_main_results.csv")
         solar_df["model"] = "SolarSDE"
     else:
-        print("WARNING: solar_sde_main_results.csv missing — re-running main eval inline")
+        print("WARNING: solar_sde_main_results.csv missing, re-running main eval inline")
         # Fallback: run main eval here
         sde = LatentNeuralSDE(z_dim=Z_DIM, c_dim=C_DIM).to(DEVICE)
         sde.load_state_dict(torch.load(SDE_CKPT, map_location=DEVICE, weights_only=False)); sde.eval()
@@ -1257,7 +1257,7 @@ else:
     # persistence as their mathematical floor + MSE values stay O(1)),
     # and (b) raw-GHI targets for the CSDI baseline (which has its own
     # internal [-1, 1] normalization via the shared GHI_SCALE=1200).
-    # NOTE: do NOT shadow the module-level GHI_SCALE — CSDI's
+    # NOTE: do NOT shadow the module-level GHI_SCALE: CSDI's
     # _norm/_denorm reference it at call time.
     print("\\n[A3/A4] Building LSTM sequence tensors (extended 90-day BMS)")
     # ADAPTIVE SCALE: the targets are GHI (W/m^2, ~0-1200) on CloudCV but PV power
@@ -1270,11 +1270,11 @@ else:
     GHI_SCALE = max(_tgt_max * 1.2, 1.0)           # re-bind module global used by CSDI _norm/_denorm
     LSTM_GHI_SCALE = GHI_SCALE                      # LSTM residual normalization scale
     print(f"    target scale set to {GHI_SCALE:.1f} (from train max {_tgt_max:.1f}) "
-          f"— PV-aware, prevents residual underflow")
+          f"PV-aware, prevents residual underflow")
     def build_seq_tensors_residual(df, seq_len, horizons):
         # Use whatever feature columns exist. ghi + clear_sky_index are always
         # present; meteorological/solar covariates exist only for CloudCV-style
-        # extended data, not SKIPP'D (which is PV-only) — so they're optional.
+        # extended data, not SKIPP'D (which is PV-only): so they're optional.
         f_cols = [c for c in ["ghi", "clear_sky_index", "solar_zenith",
                               "temperature", "humidity", "wind_speed"]
                   if c in df.columns]
@@ -1381,10 +1381,10 @@ else:
     save_baseline("lstm", res_lstm)
 
     # --- A4 MC-Dropout LSTM ---
-    # Train dropout=0.3 (was 0.1 — too low to give inference-time variance,
+    # Train dropout=0.3 (was 0.1: too low to give inference-time variance,
     # gave PICP=0.0005). At inference dropout stays ACTIVE. Add per-horizon
     # post-hoc sigma calibration: rescale each sample's deviation from the
-    # ensemble mean so the empirical val 90% PI covers 90% — standard
+    # ensemble mean so the empirical val 90% PI covers 90%, standard
     # calibrated-MC-Dropout. Without this, MC-Dropout intervals are known
     # to be too narrow (a documented limitation of the method).
     print("\\n[A4] MC-Dropout LSTM (40 epochs, persistence-residual + dropout=0.3 + calibration)")
@@ -1589,7 +1589,7 @@ else:
     combined.to_csv(STAGE_A_OUT, index=False)
 
     print("\\n" + "=" * 80)
-    print("STAGE A COMPLETE — main results table")
+    print("STAGE A COMPLETE, main results table")
     print("=" * 80)
     print(combined.to_string(index=False))
 '''
@@ -1601,7 +1601,7 @@ STAGE_B_OUT = RESULTS_DIR / "ablation_results.csv"
 # cannot load it (different state-dict shape). ABLATIONS_V2_CODE handles
 # ablations for the v2 architecture; this legacy block is a no-op in v2.
 if (CHECKPOINT_DIR / "mdn_v2_best.pt").exists():
-    print("[SKIP] v2 model detected (mdn_v2_best.pt) — legacy ABLATIONS skipped; "
+    print("[SKIP] v2 model detected (mdn_v2_best.pt), legacy ABLATIONS skipped; "
           "use ABLATIONS_V2 stage instead.")
 elif STAGE_B_OUT.exists():
     print(f"[SKIP] Stage B already done: {STAGE_B_OUT}")
@@ -1630,7 +1630,7 @@ else:
     score_full = CondScoreDecoder(z_dim=Z_DIM, c_dim=C_DIM).to(DEVICE)
     score_full.load_state_dict(torch.load(SCORE_CKPT, map_location=DEVICE, weights_only=False)); score_full.eval()
 
-    # --- A2: no-CTI — retrain SDE with constant CTI=0 ---
+    # --- A2: no-CTI: retrain SDE with constant CTI=0 ---
     print("\\n[B-A2] Retraining SDE with CTI=0 ...")
     A2_SDE = CHECKPOINT_DIR / "sde_a2_best.pt"
     if A2_SDE.exists():
@@ -1700,7 +1700,7 @@ else:
 
     # --- A4 (FIXED): MLP regressor predicting delta_kt with Gaussian noise ---
     # Earlier bug: trained to predict GHI(t) from z(t), then asked to predict GHI(t+h)
-    # from z(t+h) at inference — cross-distribution collapse (CRPS 500+).
+    # from z(t+h) at inference: cross-distribution collapse (CRPS 500+).
     # v4 A4 matches v4 A1's parameterization exactly (delta_kt + kt_current + c),
     # but replaces the DDPM score-matching decoder with a simple MLP predicting
     # mean + log-variance of delta_kt. This tests "is the diffusion process needed?"
@@ -1868,7 +1868,7 @@ else:
     abl = abl[[c for c in cols if c in abl.columns]]
     abl.to_csv(STAGE_B_OUT, index=False)
 
-    # A4 uses `reg` (DeltaKtRegressor), not `lin` — the old name was stale.
+    # A4 uses `reg` (DeltaKtRegressor), not `lin`: the old name was stale.
     # Guard each del so a missing local can't poison the gc step.
     for _n in ("sde_a2", "sde_a5", "reg"):
         if _n in dir(): pass   # noop; locals deleted below if present
@@ -1892,7 +1892,7 @@ STAGE_C_OUT = RESULTS_DIR / "solar_sde_calibrated.csv"
 # calibration inline. Legacy CALIBRATION_CODE expects the old LatentNeuralSDE
 # state dict and crashes on load. Skip cleanly when v2 ckpt is present.
 if (CHECKPOINT_DIR / "mdn_v2_best.pt").exists():
-    print("[SKIP] v2 model detected — calibration is built into STAGE 0 v2 "
+    print("[SKIP] v2 model detected, calibration is built into STAGE 0 v2 "
           "(per-(horizon, CTI-quartile) conformal scales baked into mdn_v2_best.pt).")
     # Surface a tiny df so downstream consumers that read solar_sde_calibrated.csv
     # don't crash. They'll fall back to solar_sde_main_results.csv anyway.
@@ -2014,8 +2014,8 @@ else:
 
     # Save per-point predictions for 10-min horizon (used in analysis).
     # Save under BOTH naming schemes:
-    #   y_true/y_samples/is_ramp   — STRATIFIED + ANALYSIS expect these
-    #   truths/preds               — PIT_RELIABILITY, BOOTSTRAP_CIS,
+    #   y_true/y_samples/is_ramp: STRATIFIED + ANALYSIS expect these
+    #   truths/preds: PIT_RELIABILITY, BOOTSTRAP_CIS,
     #                                ECONOMIC_CAISO expect these
     H_ANALYSIS = 60
     tf = test_f[H_ANALYSIS]
@@ -2311,7 +2311,7 @@ else:
     if _comb_p.exists():
         combined = pd.read_csv(_comb_p)
     else:
-        print("    [WARN] main_results_combined.csv missing (baselines skipped) — "
+        print("    [WARN] main_results_combined.csv missing (baselines skipped), "
               "using SolarSDE results only")
         combined = pd.read_csv(RESULTS_DIR / "solar_sde_main_results.csv")
         if "model" not in combined.columns: combined["model"] = "SolarSDE"
@@ -2390,13 +2390,13 @@ try:
     if _comb_p.exists():
         combined = pd.read_csv(_comb_p)
     else:
-        print("    [WARN] main_results_combined.csv missing (baselines skipped) — "
+        print("    [WARN] main_results_combined.csv missing (baselines skipped), "
               "using SolarSDE results only")
         combined = pd.read_csv(RESULTS_DIR / "solar_sde_main_results.csv")
         if "model" not in combined.columns: combined["model"] = "SolarSDE"
     t1 = combined[combined["horizon_min"] == 10]
     t1.to_csv(RESULTS_DIR / "paper_table1_main.csv", index=False)
-    print("\\n=== PAPER TABLE 1 — main results at h=10min ===")
+    print("\\n=== PAPER TABLE 1, main results at h=10min ===")
     print(t1.to_string(index=False))
 except Exception as e:
     print(f"Table 1 error: {e}")
@@ -2405,7 +2405,7 @@ try:
     abl = pd.read_csv(RESULTS_DIR / "ablation_results.csv")
     t2 = abl[abl["horizon_min"] == 10]
     t2.to_csv(RESULTS_DIR / "paper_table2_ablation.csv", index=False)
-    print("\\n=== PAPER TABLE 2 — ablations at h=10min ===")
+    print("\\n=== PAPER TABLE 2, ablations at h=10min ===")
     print(t2.to_string(index=False))
 except Exception as e:
     print(f"Table 2 error: {e}")
@@ -2466,21 +2466,21 @@ def combined_nb():
         ("markdown", "## 1. Shared code (metrics, SDE solver, models)"),
         ("code", SHARED_CODE),
         ("code", LOAD_DATA_CODE),
-        ("markdown", "## STAGE -2 — (Optional) Pretrain VAE on Stanford SKIPP'D for cloud diversity"),
+        ("markdown", "## STAGE -2, (Optional) Pretrain VAE on Stanford SKIPP'D for cloud diversity"),
         ("code", STAGE_MINUS2_CODE),
-        ("markdown", "## STAGE -1 — Image feature extraction (optical flow, sun-ROI, cloud fraction)"),
+        ("markdown", "## STAGE -1, Image feature extraction (optical flow, sun-ROI, cloud fraction)"),
         ("code", STAGE_MINUS1_CODE),
-        ("markdown", "## STAGE 0 — (auto) Train SDE + Score Decoder if missing"),
+        ("markdown", "## STAGE 0, (auto) Train SDE + Score Decoder if missing"),
         ("code", STAGE0_CODE),
-        ("markdown", "## STAGE A — Baselines (persistence, smart persistence, LSTM, MC-Dropout, CSDI)"),
+        ("markdown", "## STAGE A, Baselines (persistence, smart persistence, LSTM, MC-Dropout, CSDI)"),
         ("code", BASELINES_CODE),
-        ("markdown", "## STAGE B — Ablations (no-CTI, no-score, no-SDE)"),
+        ("markdown", "## STAGE B, Ablations (no-CTI, no-score, no-SDE)"),
         ("code", ABLATIONS_CODE),
-        ("markdown", "## STAGE C — Conformal Calibration"),
+        ("markdown", "## STAGE C, Conformal Calibration"),
         ("code", CALIBRATION_CODE),
-        ("markdown", "## STAGE C2 — Stratified evaluation (where does SolarSDE win?)"),
+        ("markdown", "## STAGE C2, Stratified evaluation (where does SolarSDE win?)"),
         ("code", STRATIFIED_CODE),
-        ("markdown", "## STAGE D — CTI Analysis + Economic Value + Figures"),
+        ("markdown", "## STAGE D, CTI Analysis + Economic Value + Figures"),
         ("code", ANALYSIS_CODE),
         ("markdown", "## Final: zip & download"),
         ("code", ZIP_DOWNLOAD_CODE),

@@ -84,7 +84,7 @@ class TemporalLatentSDE(nn.Module):
 
         # === Buffers updated post-training (not learnable) ===
         # PER-HORIZON conformal scale (5 entries for [6, 30, 60, 120, 180] steps).
-        # Each entry is clamped >= 1.0 — we only ever INFLATE intervals, never
+        # Each entry is clamped >= 1.0: we only ever INFLATE intervals, never
         # shrink them. A scale < 1 from val q90/1.645 means the model became
         # over-confident vs val residuals (which crushed PICP to 0.05 on real
         # data); clamping prevents this collapse.
@@ -234,9 +234,9 @@ PersistenceResidualMDN = TemporalLatentSDE
 
 
 def crps_mixture_mc(pi, mu, sigma, y, n_samples=64):
-    """CLOSED-FORM CRPS for Gaussian mixture — kept under the mc name for
+    """CLOSED-FORM CRPS for Gaussian mixture, kept under the mc name for
     backward compat with old call sites. The closed form is differentiable
-    through pi, mu, and sigma (no torch.multinomial — which would block
+    through pi, mu, and sigma (no torch.multinomial, which would block
     gradient flow through the mixture weights, leaving the persistence-blend
     weight w stuck at its init).
 
@@ -335,14 +335,14 @@ else:
     ext_ts = pd.to_datetime(ext_train["timestamp"]) if "timestamp" in ext_cols else None
     if ext_kt is None or len(ext_kt) < max(HORIZON_STEPS_TABLE) + 100:
         # Fallback to 8-day Golden train if extended is missing
-        print("    [WARN] extended kt missing — falling back to Golden train kt")
+        print("    [WARN] extended kt missing, falling back to Golden train kt")
         ext_kt = data["train"]["kt"].astype(np.float32)
         ext_ts = None
     ext_days = ext_ts.dt.date.values if ext_ts is not None else None
     # CADENCE FIX: HORIZON_STEPS_TABLE counts steps at the PRIMARY data cadence
     # (CloudCV=10s, SKIPP'D=60s; set via PRIMARY_DT in the LOAD stage, default 10s).
     # The extended series may be a different cadence, so lag `hs` on it would mean
-    # the wrong horizon — measuring e.g. 6-min persistence noise for the "1-min"
+    # the wrong horizon: measuring e.g. 6-min persistence noise for the "1-min"
     # horizon and inflating sigma_pers ~3x. Convert each horizon to seconds via
     # PRIMARY_DT, then to the correct lag in extended-steps via the detected dt_ext.
     PRIMARY_DT = float(globals().get("PRIMARY_DT", 10.0))
@@ -353,7 +353,7 @@ else:
     else:
         dt_ext = PRIMARY_DT
     if ext_days is None:
-        print(f"    [WARN] extended timestamps missing — same-day filter disabled, assuming {PRIMARY_DT:.0f}s cadence")
+        print(f"    [WARN] extended timestamps missing, same-day filter disabled, assuming {PRIMARY_DT:.0f}s cadence")
     print(f"    primary cadence: {PRIMARY_DT:.0f}s/step | extended cadence: {dt_ext:.0f}s/step")
     for hs in HORIZON_STEPS_TABLE:
         # hs primary-steps -> hs*PRIMARY_DT seconds -> lag in extended steps
@@ -422,7 +422,7 @@ else:
     # The training set is dominated by clear/quiet timesteps, so the model was
     # clear-biased and only TIED smart-persistence on cloudy days. We oversample
     # both ramp anchors AND high-CTI (turbulent) anchors so the model gets far
-    # more gradient from the cloudy regime where the imagery actually matters —
+    # more gradient from the cloudy regime where the imagery actually matters,
     # this is what lets it improve over smart-persistence on cloudy days.
     from torch.utils.data import WeightedRandomSampler
     _mh = max(HORIZON_STEPS_TABLE)
@@ -516,10 +516,10 @@ else:
     # The blended (K+1)-component mixture is heavy-tailed, so that proxy left
     # PICP at 0.59-0.74 on real Stanford test. Here we instead SEARCH for the
     # std-scale that makes the model's *empirical* 90% sample interval cover
-    # TARGET_PICP of val outcomes — no distributional assumption. We do it
+    # TARGET_PICP of val outcomes: no distributional assumption. We do it
     # separately per CTI quartile (Mondrian / group-conditional conformal,
-    # Vovk et al.; Romano et al. CQR) so the turbulent regime — where coverage
-    # collapses — gets its own, wider correction. Calibrating coverage directly
+    # Vovk et al.; Romano et al. CQR) so the turbulent regime, where coverage
+    # collapses: gets its own, wider correction. Calibrating coverage directly
     # also fixes the economic value: over-/under-reserving is a pure function of
     # PICP, so a correctly-covered interval removes the shortfall-penalty blowup.
     print("\\n[D] Mondrian conformal calibration (direct coverage targeting) on val ...")
@@ -553,7 +553,7 @@ else:
     print(f"    CTI quartile cuts (q25, q50, q75): {cti_cuts.round(5).tolist()}")
 
     # Calibration grid + floors. We now select scale by CRPS-minimization (with
-    # a coverage guardrail), not a fixed PICP target — this directly optimizes
+    # a coverage guardrail), not a fixed PICP target: this directly optimizes
     # the headline/SkyGPT metric instead of over-widening for coverage.
     S_GRID = np.linspace(0.6, 4.5, 40).astype(np.float32)
     BASE_FLOOR = 0.7            # allow shrink if it lowers CRPS
@@ -693,7 +693,7 @@ else:
              truths=npz10["truths"], preds=npz10["preds"])
 
     print("\\n" + "=" * 70)
-    print("STAGE 0 COMPLETE — Temporal Latent Neural SDE results")
+    print("STAGE 0 COMPLETE, Temporal Latent Neural SDE results")
     print("=" * 70)
     print(df_main.to_string(index=False))
     del sde; gc.collect()
@@ -708,12 +708,12 @@ POST_STAGE0_V2_VERIFY_CODE = '''\
 # ==== Verify STAGE 0 produced a healthy + competitive Latent Neural SDE ====
 MDN_CKPT = CHECKPOINT_DIR / "mdn_v2_best.pt"
 if not MDN_CKPT.exists():
-    raise RuntimeError("STAGE 0 finished but mdn_v2_best.pt missing — re-run STAGE 0.")
+    raise RuntimeError("STAGE 0 finished but mdn_v2_best.pt missing, re-run STAGE 0.")
 _sd = torch.load(MDN_CKPT, map_location="cpu", weights_only=False)
 _bad = [k for k, v in _sd.items() if torch.is_tensor(v) and not torch.isfinite(v).all()]
 if _bad:
     MDN_CKPT.unlink()
-    raise RuntimeError(f"Temporal SDE ckpt has NaN/Inf in {_bad[:3]} — deleted; re-run.")
+    raise RuntimeError(f"Temporal SDE ckpt has NaN/Inf in {_bad[:3]}, deleted; re-run.")
 print("[OK] Temporal Latent Neural SDE checkpoint verified (no NaN/Inf).")
 _cs = float(_sd.get("conformal_scale", torch.tensor(1.0)).item())
 _sp = _sd.get("sigma_pers_table", None)

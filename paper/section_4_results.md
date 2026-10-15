@@ -1,7 +1,7 @@
 # Section 4: Results (with real run data; tables paper-ready)
 
 ## 4.1 Experimental setup
-SKIPP'D (Stanford), 517 days of 64×64 all-sky images and 1-minute rooftop-PV power. Chronological 70/15/15 day split: 361 train / 78 validation / 78 test days (no shuffling, no leakage; train spans months 1-12, test months 8-10). Horizons *h* ∈ {1,5,10,15,20,30} min. Predictive distributions use *N* = 50 Monte-Carlo samples. Metrics: CRPS, PICP, PINAW (90% PI), RMSE, MAE, Winkler, forecast skill vs smart persistence, ramp AUROC; significance by Diebold–Mariano, uncertainty by bootstrap (B=1000), calibration by PIT/KS and reliability diagrams, robustness by leave-one-month-out cross-validation. Three random seeds (42/123/456).
+SKIPP'D (Stanford), 517 days of 64×64 all-sky images and 1-minute rooftop-PV power. Chronological 70/15/15 day split: 361 train / 78 validation / 78 test days (no shuffling, no leakage; train spans months 1-12, test months 8-10). Horizons *h* ∈ {1,5,10,15,20,30} min. Predictive distributions use *N* = 50 Monte-Carlo samples. Metrics: CRPS, PICP, PINAW (90% PI), RMSE, MAE, Winkler, forecast skill vs smart persistence, ramp AUROC; significance by Diebold-Mariano, uncertainty by bootstrap (B=1000), calibration by PIT/KS and reliability diagrams, robustness by leave-one-month-out cross-validation. Three random seeds (42/123/456).
 
 ## 4.2 Main result: calibrated multi-horizon nowcasting
 
@@ -16,7 +16,7 @@ SKIPP'D (Stanford), 517 days of 64×64 all-sky images and 1-minute rooftop-PV po
 | 20 | 0.95 | 3.44 | - | 0.901 | 0.164 | +51% |
 | 30 | 1.08 | 3.68 | - | 0.893 | 0.155 | +50% |
 
-SolarSDE produces sharp (PINAW 0.06-0.18) forecasts whose $90\%$ intervals are well-calibrated through $h=15$ min (PICP $0.92$–$0.94$). At the longest horizons coverage is slightly below nominal on the held-out test ($0.89$–$0.90$ at $h=20$–$30$) and is more variable out-of-distribution under leave-one-month-out cross-validation (Section 4.6, PICP $0.80\pm0.13$ at $h=30$); we report this honestly rather than claiming uniform $90\%$ coverage. Test-set coverage at multiple nominal levels and the genuine split-conformal procedure are given in Appendix B. Skill over persistence rises from $+34\%$ at 1 min to $\sim+50\%$ at 30 min.
+SolarSDE produces sharp (PINAW 0.06-0.18) forecasts whose $90\%$ intervals are well-calibrated through $h=15$ min (PICP $0.92$-$0.94$). At the longest horizons coverage is slightly below nominal on the held-out test ($0.89$-$0.90$ at $h=20$-$30$) and is more variable out-of-distribution under leave-one-month-out cross-validation (Section 4.6, PICP $0.80\pm0.13$ at $h=30$); we report this honestly rather than claiming uniform $90\%$ coverage. Test-set coverage at multiple nominal levels and the genuine split-conformal procedure are given in Appendix B. Skill over persistence rises from $+34\%$ at 1 min to $\sim+50\%$ at 30 min.
 
 *All numbers in Tables 1-3 are computed from a single consistent pipeline (identical model, split, units in kW, and sample) over three seeds; the controlled statistical validation (multi-seed variance, conformal coverage, significance) is in Appendix B, and the full-scale 517-day headline run is reproduced end-to-end in the released code.*
 
@@ -43,7 +43,7 @@ At the 1-5 minute horizons most critical for ramp response and inverter control,
 [INSERT supp_pit.csv + supp_reliability.csv]
 
 ## 4.6 Significance and robustness
-**Diebold–Mariano.** SolarSDE significantly beats persistence at every horizon (p < 10⁻³). [INSERT supp_dm_tests.csv for per-horizon DM stat + p vs persistence AND smart-persistence.]
+**Diebold-Mariano.** SolarSDE significantly beats persistence at every horizon (p < 10⁻³). [INSERT supp_dm_tests.csv for per-horizon DM stat + p vs persistence AND smart-persistence.]
 
 **Leave-one-month-out cross-validation (6 folds).**
 
@@ -63,10 +63,10 @@ At the 1-5 minute horizons most critical for ramp response and inverter control,
 **Stratified analysis.** At *h*=10 min, SolarSDE wins on 11/11 subsets (overall, all four CTI quartiles, clear/partial/cloudy regimes, ramp and non-ramp): e.g., ramp events 3.81 vs persistence 4.67, most-turbulent CTI quartile 2.96 vs 4.44, clearest quartile 0.19 vs 1.43.
 
 ## 4.7 Ramp events and CTI validation
-Ramp-detection performance (using 90%-PI width as the decision variable) is reported as both AUROC (0.90-0.91 across horizons) **and precision–recall** (Appendix B), the latter because ramps are rare and AUROC is optimistic under class imbalance; we additionally compare against a smart-persistence-interval-width detector to rule out circularity between CTI and the PI width. The CTI correlates with cloud variability (Spearman ρ = 0.60-0.75 with rolling clear-sky-index dispersion across splits, p < 10⁻³⁰⁰). Forecast difficulty rises sharply with turbulence: at *h*=10 min the per-quartile CRPS is 0.19, 0.16, 0.31, 2.96 for Q1–Q4, the two clearest quartiles are statistically indistinguishable and the turbulent quartiles are an order of magnitude harder, so CRPS is increasing in CTI from Q2 onward (not strictly monotone across all four), validating CTI as a forecastability index that isolates the hard cases.
+Ramp-detection performance (using 90%-PI width as the decision variable) is reported as both AUROC (0.90-0.91 across horizons) **and precision-recall** (Appendix B), the latter because ramps are rare and AUROC is optimistic under class imbalance; we additionally compare against a smart-persistence-interval-width detector to rule out circularity between CTI and the PI width. The CTI correlates with cloud variability (Spearman ρ = 0.60-0.75 with rolling clear-sky-index dispersion across splits, p < 10⁻³⁰⁰). Forecast difficulty rises sharply with turbulence: at *h*=10 min the per-quartile CRPS is 0.19, 0.16, 0.31, 2.96 for Q1-Q4, the two clearest quartiles are statistically indistinguishable and the turbulent quartiles are an order of magnitude harder, so CRPS is increasing in CTI from Q2 onward (not strictly monotone across all four), validating CTI as a forecastability index that isolates the hard cases.
 
 ## 4.8 Comparison to the generative state of the art (identical protocol)
-We evaluate on SkyGPT's exact held-out test set, five cloudy days, Nov–Dec 2019, 2,582 windows, training only on the SKIPP'D benchmark release (2017-03 to 2019-10; no leakage).
+We evaluate on SkyGPT's exact held-out test set, five cloudy days, Nov-Dec 2019, 2,582 windows, training only on the SKIPP'D benchmark release (2017-03 to 2019-10; no leakage).
 
 **Table 4.** 15-minute head-to-head on the identical SkyGPT cloudy test set.
 

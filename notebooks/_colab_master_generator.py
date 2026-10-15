@@ -62,7 +62,7 @@ from _final_generator import (
 )
 
 
-HEADER_MASTER_MD = """# SolarSDE — Master Notebook for Energy Reports Submission
+HEADER_MASTER_MD = """# SolarSDE, Master Notebook for Energy Reports Submission
 
 **Single end-to-end notebook.** Runs the complete pipeline: data, training, 5-fold CV, baselines, ablations, statistical pack, figures, LaTeX tables. Result: a downloadable zip with everything you need for the paper.
 
@@ -112,7 +112,7 @@ HEADER_MASTER_MD = """# SolarSDE — Master Notebook for Energy Reports Submissi
 
 1. Runtime → Change runtime type → **A100 GPU** (or T4 with 2-session plan)
 2. Set `DRIVE_PERSIST = True` in the first code cell (Drive mount auto-prompts for auth)
-3. Run All. If session disconnects: re-open, run all again — finished stages skip via Drive checkpoints
+3. Run All. If session disconnects: re-open, run all again, finished stages skip via Drive checkpoints
 4. When done: download `solarsde_paper_package.zip` from `/content/drive/MyDrive/`
 """
 
@@ -269,7 +269,7 @@ print(f"NEED_NB2_TRAINING   = {NEED_NB2_TRAINING}  (SDE+Score will be trained in
 
 K_FOLD_CV_CODE = '''\
 # ==== Leave-one-day-out cross-validation across train days ====
-# Strongest reviewer answer to "only 5 days?!" — show generalization across
+# Strongest reviewer answer to "only 5 days?!": show generalization across
 # day-level holdouts. We share the VAE across folds (unsupervised, no label
 # leakage) and retrain only the SDE + Score Decoder per fold.
 #
@@ -421,7 +421,7 @@ else:
                 with torch.no_grad():
                     z = z0
                     # Use the clamped em_step from SHARED_CODE (drift/sigma/z
-                    # bounded by Z_MEAN±8·Z_STD) — same path STAGE 0 inference
+                    # bounded by Z_MEAN±8·Z_STD): same path STAGE 0 inference
                     # uses. Without clamping, long-horizon (h>=10min = 60+
                     # Euler steps) rollouts drift OOD and PICP collapses.
                     for s in range(h):
@@ -533,7 +533,7 @@ else:
             print("       This validates CTI as a physically-meaningful scalar.")
         elif max_sp > 0.3:
             print(f"\\n  [MODERATE] CTI correlation with cloud variability is moderate (max ρ = {max_sp:.3f}).")
-            print("           Still defensible — caveat that CTI captures latent dynamics, not direct cloud-cover.")
+            print("           Still defensible, caveat that CTI captures latent dynamics, not direct cloud-cover.")
         else:
             print(f"\\n  [WEAK] CTI-cloud correlation is weak (max ρ = {max_sp:.3f}).")
             print("        Paper should discuss why latent dynamics may not align with direct cloud variability.")
@@ -554,14 +554,14 @@ HOLM_BONFERRONI_CODE = '''\
 HB_OUT = RESULTS_DIR / "holm_bonferroni_corrected.csv"
 strat_p = RESULTS_DIR / "stratified_results.csv"
 if not strat_p.exists():
-    print(f"[SKIP] {strat_p.name} not found — Holm-Bonferroni needs DM p-values from stratified stage.")
+    print(f"[SKIP] {strat_p.name} not found, Holm-Bonferroni needs DM p-values from stratified stage.")
 elif HB_OUT.exists():
     print(f"[SKIP] Holm-Bonferroni done -> {HB_OUT}")
 else:
     df = pd.read_csv(strat_p)
     p_cols = [c for c in df.columns if "p_value" in c.lower() or "pval" in c.lower() or "dm_p" in c.lower()]
     if not p_cols:
-        print("[INFO] No DM p-value columns found in stratified_results.csv — skipping Holm-Bonferroni.")
+        print("[INFO] No DM p-value columns found in stratified_results.csv, skipping Holm-Bonferroni.")
     else:
         # Collect all p-values into one flat list
         from itertools import chain
@@ -573,7 +573,7 @@ else:
                     if not np.isnan(fv): all_p.append((col, fv))
                 except: pass
         if len(all_p) < 2:
-            print("[INFO] Fewer than 2 valid p-values — Holm-Bonferroni not applicable.")
+            print("[INFO] Fewer than 2 valid p-values, Holm-Bonferroni not applicable.")
         else:
             # Holm-Bonferroni: sort ascending, threshold = alpha / (n - i + 1)
             ALPHA = 0.05
@@ -615,7 +615,7 @@ def master_nb():
         ("markdown", "## 1. Shared model definitions"),
         ("code", SHARED_CODE),
 
-        ("markdown", "## RETRAIN — Golden CO (skipped if cached)"),
+        ("markdown", "## RETRAIN, Golden CO (skipped if cached)"),
         ("code", GOLDEN_RETRAIN_GUARD_CODE),
         ("code", "LATENT_DIM = 64\nIMG_SIZE = 128\n" + VAE_MODEL),
         ("code", _gate("(ENABLE_GOLDEN_RETRAIN or NEED_IMAGE_FEATURES) and not all((DATA_DIR / 'cloudcv' / f).exists() "
@@ -633,7 +633,7 @@ def master_nb():
         ("code", GOLDEN_KT_PHYS_CODE),
         ("code", GOLDEN_EXTENDED_CODE),
 
-        ("markdown", "## STAGE B — Image-feature pre-flight + extraction"),
+        ("markdown", "## STAGE B, Image-feature pre-flight + extraction"),
         # Fallback runs BEFORE LOAD_DATA so cov dim is consistent from the
         # very first load: and any stale zero-fill that would mismatch an
         # existing SDE ckpt's c_dim is deleted up front.
@@ -643,60 +643,60 @@ def master_nb():
         ("markdown", "## 2. Load data tensors"),
         ("code", LOAD_DATA_TOLERANT_CODE),
 
-        ("markdown", "## STAGE C — Train Latent Neural SDE (Mixture-of-OU, closed-form marginals, CTI-gated diffusion)"),
+        ("markdown", "## STAGE C, Train Latent Neural SDE (Mixture-of-OU, closed-form marginals, CTI-gated diffusion)"),
         ("code", MDN_ARCHITECTURE_CODE),
         ("code", STAGE_0_V2_CODE),
         ("code", safe_stage("POST_STAGE0_V2_VERIFY", POST_STAGE0_V2_VERIFY_CODE)),
 
-        ("markdown", "## STAGE CV — Leave-one-day-out cross-validation (reviewer requirement)"),
+        ("markdown", "## STAGE CV, Leave-one-day-out cross-validation (reviewer requirement)"),
         ("code", safe_stage("K_FOLD_CV", K_FOLD_CV_CODE)),
 
-        ("markdown", "## STAGE MS — Multi-site validation (SURFRAD + SKIPP'D + NSRDB)"),
+        ("markdown", "## STAGE MS, Multi-site validation (SURFRAD + SKIPP'D + NSRDB)"),
         ("code", safe_stage("DOWNLOAD_SURFRAD", DOWNLOAD_SURFRAD_CODE)),
         ("code", safe_stage("DOWNLOAD_SKIPPD",  DOWNLOAD_SKIPPD_CODE)),
         ("code", safe_stage("DOWNLOAD_NSRDB",   DOWNLOAD_NSRDB_CODE)),
         ("code", safe_stage("MULTISITE_EVAL",   MULTISITE_EVAL_CODE)),
 
-        ("markdown", "## STAGE C+ — Corrected inference (advance time-deterministic covariates)"),
+        ("markdown", "## STAGE C+, Corrected inference (advance time-deterministic covariates)"),
         ("code", safe_stage("CORRECTED_INFERENCE", CORRECTED_INFERENCE_CODE)),
 
-        ("markdown", "## STAGE D — Standard baselines (persistence, smart-pers, LSTM, MC-Dropout, CSDI)"),
+        ("markdown", "## STAGE D, Standard baselines (persistence, smart-pers, LSTM, MC-Dropout, CSDI)"),
         ("code", safe_stage("BASELINES", BASELINES_CODE)),
 
-        ("markdown", "## STAGE F — Ablations: v2-native (A2 no-CTI, A4 no-persistence, A5 no-SDE, A7 no-cov)"),
+        ("markdown", "## STAGE F, Ablations: v2-native (A2 no-CTI, A4 no-persistence, A5 no-SDE, A7 no-cov)"),
         ("code", safe_stage("ABLATIONS_V2", ABLATIONS_V2_CODE)),
         ("code", safe_stage("ABLATIONS", ABLATIONS_CODE)),
         ("code", safe_stage("EXTRA_ABLATIONS", EXTRA_ABLATIONS_CODE)),
 
-        ("markdown", "## STAGE G — Conformal calibration"),
+        ("markdown", "## STAGE G, Conformal calibration"),
         ("code", safe_stage("CALIBRATION", CALIBRATION_CODE)),
 
-        ("markdown", "## STAGE H — Stratified eval + Diebold-Mariano test"),
+        ("markdown", "## STAGE H, Stratified eval + Diebold-Mariano test"),
         ("code", safe_stage("STRATIFIED", STRATIFIED_CODE)),
 
-        ("markdown", "## STAGE I — PIT + reliability + sharpness + bootstrap CIs (all horizons)"),
+        ("markdown", "## STAGE I, PIT + reliability + sharpness + bootstrap CIs (all horizons)"),
         ("code", safe_stage("PIT_RELIABILITY", PIT_RELIABILITY_CODE)),
         ("code", safe_stage("BOOTSTRAP_CIS", BOOTSTRAP_CIS_CODE)),
 
-        ("markdown", "## STAGE I+ — Ramp AUROC + CTI lead-time"),
+        ("markdown", "## STAGE I+, Ramp AUROC + CTI lead-time"),
         ("code", safe_stage("RAMP_AUROC", RAMP_AUROC_CODE)),
 
-        ("markdown", "## STAGE I++ — CTI vs cloud-cover validation (physical-meaningfulness)"),
+        ("markdown", "## STAGE I++, CTI vs cloud-cover validation (physical-meaningfulness)"),
         ("code", safe_stage("CTI_VALIDATION", CTI_VALIDATION_CODE)),
 
-        ("markdown", "## STAGE I+++ — Holm-Bonferroni multiple-comparison correction"),
+        ("markdown", "## STAGE I+++, Holm-Bonferroni multiple-comparison correction"),
         ("code", safe_stage("HOLM_BONFERRONI", HOLM_BONFERRONI_CODE)),
 
-        ("markdown", "## STAGE K — Economic value (CAISO reserve simulation)"),
+        ("markdown", "## STAGE K, Economic value (CAISO reserve simulation)"),
         ("code", safe_stage("ECONOMIC_CAISO", ECONOMIC_CAISO_CODE)),
 
-        ("markdown", "## STAGE M — Analysis figures (CTI, regime, forecast traces)"),
+        ("markdown", "## STAGE M, Analysis figures (CTI, regime, forecast traces)"),
         ("code", safe_stage("ANALYSIS", ANALYSIS_CODE)),
 
-        ("markdown", "## STAGE N — LaTeX tables (3 tables, paper-ready)"),
+        ("markdown", "## STAGE N, LaTeX tables (3 tables, paper-ready)"),
         ("code", safe_stage("LATEX_TABLES", LATEX_TABLES_CODE)),
 
-        ("markdown", "## Final — Zip everything to /content/drive/MyDrive/ for download"),
+        ("markdown", "## Final, Zip everything to /content/drive/MyDrive/ for download"),
         ("code", ZIP_DOWNLOAD_CODE),
     ]
     return build_nb(cells)

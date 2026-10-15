@@ -38,7 +38,7 @@ for _fid, _nm in _GD:
         print(f"  downloading {_nm} ...", flush=True)
         gdown.download(id=_fid, output=str(_d), quiet=True)
 if not (SKYGPT_DIR / "test_set_2019nov_dec.hdf5").exists():
-    raise RuntimeError("SkyGPT test set download failed — re-run this cell.")
+    raise RuntimeError("SkyGPT test set download failed, re-run this cell.")
 
 _hf = h5py.File(SKYGPT_DIR / "test_set_2019nov_dec.hdf5", "r")
 imgs_log = _hf["test/images_log"][:]          # (N,16,64,64,3) uint8
@@ -139,7 +139,7 @@ def _build_cov(ft, cs, motion):
 
 # Reconstruct a continuous 1-min PV series for the 5 cloudy days from the
 # overlapping windows (pv_log = t-15..t observed, pv_pred = t+1..t+15). This lets
-# us read targets at ANY horizon — so we evaluate the FULL 1-30 min band on
+# us read targets at ANY horizon: so we evaluate the FULL 1-30 min band on
 # SkyGPT's identical cloudy test days, not just <=15. (h=15 is the SkyGPT
 # head-to-head; 1/5/10 are uncontested short nowcasts; 20/30 extend beyond
 # SkyGPT entirely on the same hard cloudy data.)

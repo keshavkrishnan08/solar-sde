@@ -284,7 +284,7 @@ MULTISITE_EVAL_CODE = '''\
 # ==== Multi-site evaluation: persistence baseline at each SURFRAD station ====
 # Smart-persistence is a meaningful zero-shot baseline at every station
 # (uses only GHI history). Reports per-station CRPS/RMSE so the paper has
-# a real cross-site result table — kills reviewer #2's "only 5 days at one
+# a real cross-site result table: kills reviewer #2's "only 5 days at one
 # site" complaint.
 #
 # The full SolarSDE model REQUIRES sky images for the CTI gate and CS-VAE,
@@ -336,5 +336,5 @@ if results_rows:
     print("Multi-site SURFRAD persistence baselines:")
     print(df_ms.to_string(index=False))
 else:
-    print("[WARN] No SURFRAD data parsed — skipping multi-site eval.")
+    print("[WARN] No SURFRAD data parsed, skipping multi-site eval.")
 '''

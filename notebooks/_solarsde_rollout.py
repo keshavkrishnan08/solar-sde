@@ -126,7 +126,7 @@ class RolloutLatentSDE(nn.Module):
     def marginal_at_h(self, z_seq, kt_seq, c_seq, cti, h_norm):
         """Roll the latent forward to t+h (n_paths sample paths), decode each to
         a delta-kt component, blend with persistence, conformally scale.
-        Returns (pi_ext, mean_ext, std_ext) over delta-kt — same interface."""
+        Returns (pi_ext, mean_ext, std_ext) over delta-kt, same interface."""
         ctx = self._encode(z_seq, kt_seq, c_seq, cti, h_norm)
         z0 = z_seq[:, -1, :]
         B = z0.shape[0]; P = self.n_paths; dev = z0.device
@@ -177,7 +177,7 @@ MixtureOfOULatentSDE = RolloutLatentSDE
 
 def crps_mixture_mc(pi, mu, sigma, y, n_samples=64):
     """Closed-form Gaussian-mixture CRPS (differentiable through pi/mu/sigma).
-    Same as the closed-form model — the rollout produces a (P+1)-component
+    Same as the closed-form model, the rollout produces a (P+1)-component
     Gaussian mixture per example, so the identical CRPS applies."""
     SQRT2  = float(_math_pr.sqrt(2.0)); SQRTPI = float(_math_pr.sqrt(_math_pr.pi))
     y_exp = y.unsqueeze(-1)

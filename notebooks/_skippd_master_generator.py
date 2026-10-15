@@ -38,7 +38,7 @@ from _skygpt_eval import SKYGPT_BENCHMARK_CODE
 
 
 SKIPPD_SETUP_CODE = '''\
-# ==== Setup (SKIPP'D master — runs on Kaggle or Colab GPU) ====
+# ==== Setup (SKIPP'D master: runs on Kaggle or Colab GPU) ====
 import os, sys, json, math, time, gc, shutil
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -53,7 +53,7 @@ try:
     import torch._dynamo         # noqa: F401  (warm the lazy import AdamW triggers)
 except Exception as _e_warm:
     print(f"[WARN] torch._dynamo warmup failed ({type(_e_warm).__name__}: {_e_warm}); "
-          f"TORCHDYNAMO_DISABLE=1 set — continuing.")
+          f"TORCHDYNAMO_DISABLE=1 set, continuing.")
 import torch.nn as nn, torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from tqdm import tqdm
@@ -64,7 +64,7 @@ IN_COLAB = "google.colab" in sys.modules
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Kaggle={IN_KAGGLE} Colab={IN_COLAB} device={DEVICE}")
 if DEVICE.type != "cuda":
-    print("[WARN] No GPU detected — VAE training on ~350k images will be slow. "
+    print("[WARN] No GPU detected, VAE training on ~350k images will be slow. "
           "Enable a GPU runtime (Kaggle: Settings>Accelerator; Colab: Runtime>Change type).")
 
 ROOT = (Path("/kaggle/working") if IN_KAGGLE else Path.cwd()) / "skippd_run"
@@ -96,7 +96,7 @@ print(f"PERSIST_DIR={PERSIST_DIR}")
 def nb_skippd():
     cells = [
         ("markdown",
-         "# SolarSDE on SKIPP'D — 497-day Probabilistic PV Nowcasting\n\n"
+         "# SolarSDE on SKIPP'D, 497-day Probabilistic PV Nowcasting\n\n"
          "Stanford sky-image + rooftop-PV benchmark (huggingface.co/datasets/skyimagenet/SKIPPD), "
          "1-min cadence, 64×64 fisheye frames. ~497 days → ~75 validation days, which makes "
          "conformal calibration transfer (the 8-day CloudCV set could not). Target is PV power; "
@@ -108,7 +108,7 @@ def nb_skippd():
         ("markdown", "## 1. Download full SKIPP'D (~2.3 GB)"),
         ("code", SKIPPD_DOWNLOAD_FULL_CODE),
 
-        ("markdown", "## 2. Preprocess — clear-sky-PV index, ramps, chronological splits"),
+        ("markdown", "## 2. Preprocess, clear-sky-PV index, ramps, chronological splits"),
         ("code", SKIPPD_PREP_CODE),
 
         ("markdown", "## 3. Train CS-VAE (64×64 → 64-d cloud-state latent) + encode all frames"),
@@ -131,7 +131,7 @@ def nb_skippd():
         ("code", STAGE_0_V2_CODE),
         ("code", safe_stage("POST_STAGE0_V2_VERIFY", POST_STAGE0_V2_VERIFY_CODE)),
 
-        ("markdown", "## 6b. SkyGPT exact-benchmark — identical Nov-Dec 2019 cloudy test set (h=1,5,10,15)"),
+        ("markdown", "## 6b. SkyGPT exact-benchmark, identical Nov-Dec 2019 cloudy test set (h=1,5,10,15)"),
         ("code", safe_stage("SKYGPT_BENCHMARK", SKYGPT_BENCHMARK_CODE)),
 
         ("markdown", "## 7. Baselines (persistence, smart-persistence, LSTM, MC-Dropout, CSDI)"),
@@ -168,7 +168,7 @@ def nb_skippd():
         ("code", safe_stage("ANALYSIS", ANALYSIS_CODE)),
         ("code", safe_stage("LATEX_TABLES", LATEX_TABLES_CODE)),
 
-        ("markdown", "## Final — Zip the paper package"),
+        ("markdown", "## Final, Zip the paper package"),
         ("code", ZIP_DOWNLOAD_CODE),
     ]
     return build_nb(cells)

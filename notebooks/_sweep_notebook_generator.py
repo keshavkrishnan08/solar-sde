@@ -34,7 +34,7 @@ import torch
 try:
     import torch._utils, torch._dynamo  # noqa: F401
 except Exception as _e:
-    print(f"[WARN] dynamo warmup: {_e} — continuing")
+    print(f"[WARN] dynamo warmup: {_e}, continuing")
 import torch.nn as nn, torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from tqdm import tqdm
@@ -45,7 +45,7 @@ IN_COLAB = "google.colab" in sys.modules
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Kaggle={IN_KAGGLE} Colab={IN_COLAB} device={DEVICE}")
 if DEVICE.type != "cuda":
-    print("[WARN] No GPU — enable a GPU runtime.")
+    print("[WARN] No GPU, enable a GPU runtime.")
 
 ROOT = (Path("/kaggle/working") if IN_KAGGLE else Path.cwd()) / "sweep_run"
 PERSIST_DIR = ROOT / "outputs"; WORK_DIR = ROOT / "work"; DATA_DIR = WORK_DIR / "data"
@@ -57,7 +57,7 @@ for d in [DATA_DIR, CHECKPOINT_DIR, RESULTS_DIR, LATENT_DIR, SPLITS_DIR, EXTENDE
 
 # ===== The sweep =====
 # NOTE: MOTION_GRID=3 (spatial flow) was tested and HURT (base 3.03 -> 3.63 at
-# h=15) — noisy on 64x64 frames. The bigmix head helped though. So the next sweep
+# h=15): noisy on 64x64 frames. The bigmix head helped though. So the next sweep
 # tests the head variants at the GOOD motion setting (grid=1). bigmix+grid1 is the
 # most promising untested config.
 SWEEP_CONFIGS = [
@@ -131,10 +131,10 @@ for _ci, (_arch, _grid) in enumerate(SWEEP_CONFIGS):
         print(f"\\n  [CONFIG {_ci+1}] {_arch} grid{_grid}: SkyGPT h=15 CRPS = {_h15:.3f} "
               f"({'BEATS 2.81 ✓' if _h15 < 2.81 else f'{100*(_h15-2.81)/2.81:+.1f}% vs 2.81'})")
     except Exception as _e:
-        traceback.print_exc(); print(f"  [CONFIG {_ci+1}] {_arch} FAILED: {_e} — continuing")
+        traceback.print_exc(); print(f"  [CONFIG {_ci+1}] {_arch} FAILED: {_e}, continuing")
 
 # ===== comparison =====
-print("\\n" + "=" * 70); print("SWEEP COMPARISON — SkyGPT cloudy test CRPS (kW)"); print("=" * 70)
+print("\\n" + "=" * 70); print("SWEEP COMPARISON, SkyGPT cloudy test CRPS (kW)"); print("=" * 70)
 if SWEEP_RESULTS:
     comp = pd.DataFrame(SWEEP_RESULTS)
     comp.to_csv(RESULTS_DIR / "sweep_comparison.csv", index=False)
@@ -144,10 +144,10 @@ if SWEEP_RESULTS:
         _best = comp.loc[comp["h15"].idxmin()]
         print(f"\\n  BEST: ARCH={_best.arch} grid{int(_best.motion_grid)} -> h=15 = {_best.h15:.3f} kW")
         if _best.h15 < 2.81:
-            print(f"  >>> BEATS SkyGPT: {_best.h15:.3f} < 2.81 — set ARCH={_best.arch}, "
+            print(f"  >>> BEATS SkyGPT: {_best.h15:.3f} < 2.81, set ARCH={_best.arch}, "
                   f"MOTION_GRID={int(_best.motion_grid)} in notebook 11 for the final paper run <<<")
         else:
-            print(f"  best is {100*(_best.h15-2.81)/2.81:+.1f}% vs SkyGPT 2.81 — "
+            print(f"  best is {100*(_best.h15-2.81)/2.81:+.1f}% vs SkyGPT 2.81, "
                   f"calibration/breadth contributions stand regardless.")
     print("  -> saved sweep_comparison.csv + per-config skygpt_*.csv")
 else:
@@ -158,10 +158,10 @@ else:
 def nb_sweep():
     cells = [
         ("markdown",
-         "# SolarSDE — ARCH × MOTION_GRID Sweep (auto)\n\n"
+         "# SolarSDE, ARCH × MOTION_GRID Sweep (auto)\n\n"
          "Runs the two experiments automatically and prints a comparison vs SkyGPT 2.81:\n"
-         "1. **ARCH=base, MOTION_GRID=3** — does spatial cloud-motion alone help?\n"
-         "2. **ARCH=bigmix, MOTION_GRID=3** — spatial motion + heavy-tail mixture head\n\n"
+         "1. **ARCH=base, MOTION_GRID=3** does spatial cloud-motion alone help?\n"
+         "2. **ARCH=bigmix, MOTION_GRID=3** spatial motion + heavy-tail mixture head\n\n"
          "VAE + latents + motion(grid 3) computed once; the loop re-trains the SDE per "
          "architecture and benchmarks each on SkyGPT's identical cloudy test. ~3 h on a T4. "
          "If a config beats 2.81 at h=15, set those knobs in notebook 11 for the paper. "
@@ -186,7 +186,7 @@ def nb_sweep():
         ("markdown", "## 7. Architecture definitions (loaded once)"),
         ("code", _cell("CLOSEDFORM_ARCH", "MDN_ARCHITECTURE_CODE")),
 
-        ("markdown", "## 8. RUN THE SWEEP — train + benchmark each config, then compare"),
+        ("markdown", "## 8. RUN THE SWEEP, train + benchmark each config, then compare"),
         ("code", "# ==== SWEEP_LOOP ====\ntry:\n"
                  + "".join("    " + ln + "\n" for ln in SWEEP_LOOP_CODE.splitlines())
                  + "except Exception:\n    import traceback; traceback.print_exc()\n"

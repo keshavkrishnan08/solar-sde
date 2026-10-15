@@ -66,7 +66,7 @@ ARCH_MENU = {
 }
 _arch = str(globals().get("ARCH", "base")).lower()
 if _arch not in ARCH_MENU:
-    print(f"[WARN] unknown ARCH='{_arch}' — using 'base'"); _arch = "base"
+    print(f"[WARN] unknown ARCH='{_arch}', using 'base'"); _arch = "base"
 _K, _D, _L, _CLS = ARCH_MENU[_arch]
 ARCH_N_COMPONENTS = _K; ARCH_D_MODEL = _D; ARCH_N_LAYERS = _L; ARCH_N_HEADS = 4
 # point the alias STAGE_0 / eval / sweep use at the selected encoder class

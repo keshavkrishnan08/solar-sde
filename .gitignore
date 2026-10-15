@@ -1,4 +1,4 @@
-# Data directories (too large for GitHub — notebooks re-download from NREL)
+# Data directories (too large for GitHub: notebooks re-download from NREL)
 data/raw/
 data/processed/
 data/metadata/

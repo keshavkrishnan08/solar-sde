@@ -44,7 +44,7 @@ import torch
 try:
     import torch._utils, torch._dynamo  # noqa: F401
 except Exception as _e:
-    print(f"[WARN] dynamo warmup: {_e} — continuing")
+    print(f"[WARN] dynamo warmup: {_e}, continuing")
 import torch.nn as nn, torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from tqdm import tqdm
@@ -55,7 +55,7 @@ IN_COLAB = "google.colab" in sys.modules
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Kaggle={IN_KAGGLE} Colab={IN_COLAB} device={DEVICE}")
 if DEVICE.type != "cuda":
-    print("[WARN] No GPU — enable a GPU runtime. Training both architectures on CPU is impractical.")
+    print("[WARN] No GPU, enable a GPU runtime. Training both architectures on CPU is impractical.")
 
 ROOT = (Path("/kaggle/working") if IN_KAGGLE else Path.cwd()) / "final_run"
 PERSIST_DIR = ROOT / "outputs"; WORK_DIR = ROOT / "work"; DATA_DIR = WORK_DIR / "data"
@@ -123,7 +123,7 @@ def _clone_repo():
         return False
 
 if not _clone_repo():
-    raise RuntimeError("Could not obtain the SolarSDE repo from GitHub — check network/repo access.")
+    raise RuntimeError("Could not obtain the SolarSDE repo from GitHub, check network/repo access.")
 MODULE_DIR = REPO_DIR / "notebooks"
 sys.path.insert(0, str(MODULE_DIR))
 print(f"  modules dir: {{MODULE_DIR}}")
@@ -140,7 +140,7 @@ def _safe_import(module, names):
     except Exception as e:
         print(f"  [FAIL] {{module}}: {{type(e).__name__}}: {{str(e)[:120]}}")
         for n in names:
-            out[n] = f'print("[SKIP] {{n}} unavailable — module {{module}} failed to import")'
+            out[n] = f'print("[SKIP] {{n}} unavailable, module {{module}} failed to import")'
     return out
 
 globals().update(_safe_import("_master_hardening", ["safe_stage"]))
@@ -172,7 +172,7 @@ if isinstance(globals().get("safe_stage"), str):
         ind = "\\n".join("    " + l if l else "" for l in code.splitlines())
         return (f"try:\\n{{ind}}\\nexcept Exception as _e:\\n"
                 f"    import traceback; traceback.print_exc()\\n"
-                f"    print('[STAGE FAILED] {{name}} — continuing.')\\n")
+                f"    print('[STAGE FAILED] {{name}}, continuing.')\\n")
     print("  [WARN] using local fallback safe_stage")
 print("\\nAll modules wired. Code provenance: github.com/keshavkrishnan08/SDE @ main")
 '''
@@ -187,7 +187,7 @@ def _cell(stage_name: str, inner: str) -> str:
         f"    exec(safe_stage({stage_name!r}, {inner}), globals())\n"
         f"except Exception:\n"
         f"    import traceback; traceback.print_exc()\n"
-        f"    print('[CELL FAILED] {stage_name} — continuing to next cell.')\n"
+        f"    print('[CELL FAILED] {stage_name}, continuing to next cell.')\n"
     )
 
 
@@ -199,28 +199,28 @@ def _cell_raw(stage_name: str, raw_stmt: str) -> str:
         + "".join(f"    {l}\n" for l in raw_stmt.splitlines())
         + f"except Exception:\n"
         f"    import traceback; traceback.print_exc()\n"
-        f"    print('[CELL FAILED] {stage_name} — continuing to next cell.')\n"
+        f"    print('[CELL FAILED] {stage_name}, continuing to next cell.')\n"
     )
 
 
 def nb_final():
     cells = [
         ("markdown",
-         "# SolarSDE — Final Publication Notebook\n\n"
+         "# SolarSDE, Final Publication Notebook\n\n"
          "**Code provenance:** every stage below pulls and runs the actual modules from "
-         "[github.com/keshavkrishnan08/SDE](https://github.com/keshavkrishnan08/SDE) — nothing is "
+         "[github.com/keshavkrishnan08/SDE](https://github.com/keshavkrishnan08/SDE), nothing is "
          "rewritten or embedded.\n\n"
          "**What this notebook produces (one GPU run):**\n"
          "1. Full SKIPP'D pipeline (517 days, VAE + optical-flow motion + CTI)\n"
          "2. **Both architectures** trained: closed-form Mixture-of-OU *and* Euler-Maruyama latent rollout\n"
          "3. **Ensemble** of the two + **champion selection on validation** (never test)\n"
-         "4. SkyGPT exact-benchmark (identical Nov–Dec 2019 cloudy test) for **all variants**, full 1–30 min band\n"
+         "4. SkyGPT exact-benchmark (identical Nov-Dec 2019 cloudy test) for **all variants**, full 1-30 min band\n"
          "5. Baselines, ablations, stratified+DM, leave-one-month-out CV, PIT/bootstrap, ramp AUROC, CTI "
          "validation, multi-level reliability, sampling efficiency, compute cost, Holm-Bonferroni, "
          "CAISO economics + sensitivity, figures, LaTeX tables\n\n"
          "Every stage is failure-isolated: an error prints and the run continues to the final zip.\n\n"
          "*Honesty note: the head-to-head vs SkyGPT (CRPS 2.81 at h=15, their cloudy test) is reported "
-         "exactly as measured — whichever way it comes out.*"),
+         "exactly as measured, whichever way it comes out.*"),
 
         ("markdown", "## 0. Environment"),
         ("code", SETUP_CODE),
@@ -228,10 +228,10 @@ def nb_final():
         ("markdown", "## 1. Pull the codebase from GitHub (the repo code IS the experiment code)"),
         ("code", CLONE_AND_IMPORT_CODE),
 
-        ("markdown", "## 2. Download all data — SKIPP'D (~2.3 GB) + SkyGPT exact test set"),
+        ("markdown", "## 2. Download all data, SKIPP'D (~2.3 GB) + SkyGPT exact test set"),
         ("code", _cell("DOWNLOAD_SKIPPD", "SKIPPD_DOWNLOAD_FULL_CODE")),
 
-        ("markdown", "## 3. Preprocess — clear-sky-PV, ramps, chronological splits"),
+        ("markdown", "## 3. Preprocess, clear-sky-PV, ramps, chronological splits"),
         ("code", _cell("SKIPPD_PREP", "SKIPPD_PREP_CODE")),
 
         ("markdown", "## 4. CS-VAE (64×64 → 64-d) + encode all frames + optical-flow motion features"),
@@ -249,7 +249,7 @@ def nb_final():
         ("code", _cell("DATA_CARD", "DATA_CARD_CODE")),
         ("code", _cell("IMPLEMENTATION_DETAILS", "IMPLEMENTATION_DETAILS_CODE")),
 
-        ("markdown", "## 7. ARCHITECTURE A — Closed-form Mixture-of-OU: train + calibrate + evaluate"),
+        ("markdown", "## 7. ARCHITECTURE A, Closed-form Mixture-of-OU: train + calibrate + evaluate"),
         ("code", _cell("CLOSEDFORM_ARCH", "MDN_ARCHITECTURE_CODE")),
         ("code", _cell_raw("CLOSEDFORM_GLUE",
                            "# Keep a named reference to the closed-form class before the rollout\n"
@@ -262,7 +262,7 @@ def nb_final():
         ("code", _cell("CLOSEDFORM_VERIFY", "POST_STAGE0_V2_VERIFY_CODE")),
         ("code", _cell("STASH_CLOSEDFORM", "STASH_CLOSEDFORM_CODE")),
 
-        ("markdown", "## 8. ARCHITECTURE B — Euler-Maruyama latent rollout: train + calibrate + evaluate"),
+        ("markdown", "## 8. ARCHITECTURE B, Euler-Maruyama latent rollout: train + calibrate + evaluate"),
         ("code", _cell("ROLLOUT_ARCH", "ROLLOUT_ARCH_CODE")),
         ("code", _cell_raw("ROLLOUT_TRAIN",
                            "exec(safe_stage('STAGE0_ROLLOUT',\n"
@@ -270,10 +270,10 @@ def nb_final():
         ("code", _cell("ROLLOUT_VERIFY", "POST_STAGE0_V2_VERIFY_CODE")),
         ("code", _cell("STASH_ROLLOUT", "STASH_ROLLOUT_CODE")),
 
-        ("markdown", "## 9. Champion selection (on VALIDATION) — closed-form vs rollout vs ensemble"),
+        ("markdown", "## 9. Champion selection (on VALIDATION), closed-form vs rollout vs ensemble"),
         ("code", _cell("CHAMPION_SELECT", "CHAMPION_SELECT_CODE")),
 
-        ("markdown", "## 10. SkyGPT EXACT BENCHMARK — all variants, identical cloudy test, full 1–30 min band"),
+        ("markdown", "## 10. SkyGPT EXACT BENCHMARK, all variants, identical cloudy test, full 1-30 min band"),
         ("code", _cell("SKYGPT_TRIPLE_BENCHMARK", "SKYGPT_TRIPLE_BENCHMARK_CODE")),
 
         # --- OWN-MODEL GPU STAGES FIRST: these only need the trained champion
@@ -321,7 +321,7 @@ def nb_final():
         ("code", _cell("ANALYSIS", "ANALYSIS_CODE")),
         ("code", _cell("LATEX_TABLES", "LATEX_TABLES_CODE")),
 
-        ("markdown", "## Final — Zip the complete paper package"),
+        ("markdown", "## Final, Zip the complete paper package"),
         ("code", _cell("ZIP", "ZIP_DOWNLOAD_CODE")),
     ]
     return build_nb(cells)

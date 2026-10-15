@@ -38,7 +38,7 @@ CRPS @ each horizon (lower = better):
 SolarSDE is the only learned model competitive with persistence; LSTM/CSDI
 degrade badly at long horizons. Skill vs persistence: +34% (h1) → +47% (h30).
 
-## 3. SkyGPT head-to-head: IDENTICAL cloudy test (Nov–Dec 2019, 5 days, 2582 windows)
+## 3. SkyGPT head-to-head: IDENTICAL cloudy test (Nov: Dec 2019, 5 days, 2582 windows)
 
 CRPS (kW) on SkyGPT's exact test set:
 

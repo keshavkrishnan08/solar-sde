@@ -53,7 +53,7 @@ _add("split", "chronological 70/15/15 by day (no shuffle, no leakage)")
 _add("horizons_min", str(list(HORIZON_MIN.values())))
 _add("mc_samples", N_SAMPLES)
 
-# Model hyperparameters (TemporalLatentSDE) — read the ACTUAL history length so
+# Model hyperparameters (TemporalLatentSDE): read the ACTUAL history length so
 # the reproducibility table never contradicts the seq_len row.
 _seqlen = int(globals().get("SEQ_LEN", 16))
 _add("arch", f"Transformer encoder (2 layers, d=128, 4 heads) over {_seqlen}-step history "
@@ -79,7 +79,7 @@ print(f"\\n  -> saved implementation_details.{{csv,json}}")
 
 DATA_CARD_CODE = '''\
 # ==== Data card: dataset statistics for the paper (reviewer requirement) ====
-print("=" * 70); print("DATA CARD — SKIPP'D splits"); print("=" * 70)
+print("=" * 70); print("DATA CARD, SKIPP'D splits"); print("=" * 70)
 _rows = []
 for s in ["train", "val", "test"]:
     d = data[s]
@@ -114,7 +114,7 @@ COMPUTATIONAL_COST_CODE = '''\
 import time as _time
 MDN_CKPT = CHECKPOINT_DIR / "mdn_v2_best.pt"
 if not MDN_CKPT.exists():
-    print("[WARN] mdn_v2_best.pt missing — skipping computational-cost stage.")
+    print("[WARN] mdn_v2_best.pt missing, skipping computational-cost stage.")
 else:
     _sde = TemporalLatentSDE(z_dim=Z_DIM, c_dim=C_DIM, n_components=3,
                              seq_len=int(globals().get("SEQ_LEN", 30)),
@@ -165,7 +165,7 @@ else:
     cost.to_csv(RESULTS_DIR / "computational_cost.csv", index=False)
     print("=" * 70); print("COMPUTATIONAL COST"); print("=" * 70)
     print(cost.T.to_string(header=False))
-    print(f"\\n  Model is {n_params/1e6:.2f}M params, {size_mb:.1f} MB — runs in "
+    print(f"\\n  Model is {n_params/1e6:.2f}M params, {size_mb:.1f} MB, runs in "
           f"{latency_ms:.1f} ms/forecast on {DEVICE} (real-time capable for 1-min nowcasting).")
     print(f"  -> saved computational_cost.csv")
     del _sde; gc.collect()
@@ -202,7 +202,7 @@ if rows:
     print(f"  overall ECE = {rel['abs_error'].mean():.4f}")
     print(f"  -> saved reliability_levels.csv")
 else:
-    print("[WARN] no per_horizon_preds found — skipping reliability-levels stage.")
+    print("[WARN] no per_horizon_preds found, skipping reliability-levels stage.")
 '''
 
 
@@ -211,7 +211,7 @@ SAMPLING_EFFICIENCY_CODE = '''\
 MDN_CKPT = CHECKPOINT_DIR / "mdn_v2_best.pt"
 N_GRID = [10, 25, 50, 100, 200]
 if not MDN_CKPT.exists():
-    print("[WARN] mdn_v2_best.pt missing — skipping sampling-efficiency stage.")
+    print("[WARN] mdn_v2_best.pt missing, skipping sampling-efficiency stage.")
 else:
     SEQ = int(globals().get("SEQ_LEN", 30))
     _sde = TemporalLatentSDE(z_dim=Z_DIM, c_dim=C_DIM, n_components=3, seq_len=SEQ,
@@ -316,7 +316,7 @@ if npz10.exists():
                               "savings_USD_per_GW_yr": round(per_c - sde_c)})
 grid = pd.DataFrame(rows_grid)
 
-print("=" * 70); print("ECONOMIC VALUE — SENSITIVITY"); print("=" * 70)
+print("=" * 70); print("ECONOMIC VALUE, SENSITIVITY"); print("=" * 70)
 if len(val_h):
     val_h.to_csv(RESULTS_DIR / "economic_value_by_horizon.csv", index=False)
     print("Savings vs persistence by horizon ($50 reserve / $1000 penalty / 1 GW):")
@@ -390,7 +390,7 @@ for f in range(nfolds):
     te_mask = fold_id == f; tr_mask = ~te_mask
     tr_anchor = _anchors(tr_mask); te_anchor = _anchors(te_mask)
     if len(tr_anchor) < 500 or len(te_anchor) < 100:
-        print(f"  fold {f}: too few samples (train={len(tr_anchor)}, test={len(te_anchor)}) — skipped")
+        print(f"  fold {f}: too few samples (train={len(tr_anchor)}, test={len(te_anchor)}), skipped")
         continue
     torch.manual_seed(42)
     m = TemporalLatentSDE(z_dim=Z_DIM, c_dim=C_DIM, n_components=3, seq_len=SEQ,
@@ -456,5 +456,5 @@ if cv_rows:
               f"PICP={r.picp_mean:.3f}+/-{r.picp_std:.3f}  ({int(r.n_folds)} folds)")
     print("  -> saved cross_validation_results.csv, cross_validation_summary.csv")
 else:
-    print("[WARN] no CV folds completed — dataset too small for the chosen scheme.")
+    print("[WARN] no CV folds completed, dataset too small for the chosen scheme.")
 '''

@@ -40,11 +40,11 @@ ROLLOUT_SETUP_CODE = SKIPPD_SETUP_CODE.replace("skippd_run", "skippd_rollout_run
 def nb_skippd_rollout():
     cells = [
         ("markdown",
-         "# SolarSDE-ROLLOUT on SKIPP'D — Latent-Rollout PV Nowcasting\n\n"
+         "# SolarSDE-ROLLOUT on SKIPP'D, Latent-Rollout PV Nowcasting\n\n"
          "Same 497-day SKIPP'D benchmark and same experiment suite as notebook 09, but the "
          "forecast is produced by **rolling the cloud-state latent forward** with a learned "
          "neural SDE (Euler-Maruyama, n_paths sample paths) and **decoding the future latent** "
-         "to a PV distribution — modeling cloud-state *evolution* (advection) rather than reading "
+         "to a PV distribution, modeling cloud-state *evolution* (advection) rather than reading "
          "a closed-form marginal. This is the method-level attempt to match SkyGPT's cloud-motion "
          "modeling, in latent space (no pixel generation). Run on a **GPU** runtime; training is "
          "slower than 09 (the rollout backprops through up to 30 Euler steps)."),
@@ -53,7 +53,7 @@ def nb_skippd_rollout():
         ("code", ROLLOUT_SETUP_CODE),
         ("markdown", "## 1. Download full SKIPP'D (~2.3 GB)"),
         ("code", SKIPPD_DOWNLOAD_FULL_CODE),
-        ("markdown", "## 2. Preprocess — clear-sky-PV index, ramps, chronological splits"),
+        ("markdown", "## 2. Preprocess, clear-sky-PV index, ramps, chronological splits"),
         ("code", SKIPPD_PREP_CODE),
         ("markdown", "## 3. Train CS-VAE (64×64 → 64-d latent) + encode + optical-flow motion"),
         ("code", "Z_DIM = 64\nSKIPPD_VAE_EPOCHS = 12\n" + SKIPPD_VAE_CODE),
@@ -73,7 +73,7 @@ def nb_skippd_rollout():
         ("code", STAGE_0_V2_CODE),
         ("code", safe_stage("POST_STAGE0_V2_VERIFY", POST_STAGE0_V2_VERIFY_CODE)),
 
-        ("markdown", "## 6b. SkyGPT exact-benchmark — identical Nov-Dec 2019 cloudy test (full 1–30 band)"),
+        ("markdown", "## 6b. SkyGPT exact-benchmark, identical Nov-Dec 2019 cloudy test (full 1-30 band)"),
         ("code", safe_stage("SKYGPT_BENCHMARK", SKYGPT_BENCHMARK_CODE)),
 
         ("markdown", "## 7. Baselines (persistence, smart-persistence, LSTM, MC-Dropout, CSDI)"),
@@ -105,7 +105,7 @@ def nb_skippd_rollout():
         ("markdown", "## 14. Analysis figures + LaTeX tables"),
         ("code", safe_stage("ANALYSIS", ANALYSIS_CODE)),
         ("code", safe_stage("LATEX_TABLES", LATEX_TABLES_CODE)),
-        ("markdown", "## Final — Zip the paper package"),
+        ("markdown", "## Final, Zip the paper package"),
         ("code", ZIP_DOWNLOAD_CODE),
     ]
     return build_nb(cells)

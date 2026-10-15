@@ -50,9 +50,9 @@ from _multisite import (
 )
 
 
-HEADER_08A_MD = """# SolarSDE Master Part 1 — Foundations + Training + Cross-Validation
+HEADER_08A_MD = """# SolarSDE Master Part 1, Foundations + Training + Cross-Validation
 
-**Target venue: Solar Energy (Elsevier, IF ~6, hybrid — no mandatory APC).**
+**Target venue: Solar Energy (Elsevier, IF ~6, hybrid, no mandatory APC).**
 
 **Kaggle workflow:** Run this notebook (~9-10h on P100), then save the version
 as a Kaggle Dataset. Open 08b_master_part2_kaggle.ipynb and attach this run's
@@ -82,7 +82,7 @@ output as an input dataset. ~6-8h more. Final results zip downloads from 08b.
 """
 
 
-HEADER_08B_MD = """# SolarSDE Master Part 2 — Baselines, Ablations, Statistical Pack, Figures
+HEADER_08B_MD = """# SolarSDE Master Part 2, Baselines, Ablations, Statistical Pack, Figures
 
 **Run 08a_master_part1_kaggle.ipynb FIRST.** Attach its output as a Kaggle
 Dataset before running this notebook.
@@ -185,7 +185,7 @@ if torch.cuda.is_available():
 
 
 KAGGLE_SETUP_PART2_CODE = '''\
-# ==== Kaggle setup (Part 2 — also pulls in Part 1's artifacts from attached dataset) ====
+# ==== Kaggle setup (Part 2: also pulls in Part 1's artifacts from attached dataset) ====
 import os, sys, shutil
 from pathlib import Path
 
@@ -365,7 +365,7 @@ def nb_08a_kaggle():
         ("markdown", "## 1. Shared model definitions"),
         ("code", SHARED_CODE),
 
-        ("markdown", "## RETRAIN — Golden CO (skipped if cached)"),
+        ("markdown", "## RETRAIN, Golden CO (skipped if cached)"),
         ("code", GOLDEN_RETRAIN_GUARD_CODE),
         ("code", "LATENT_DIM = 64\nIMG_SIZE = 128\n" + VAE_MODEL),
         # CloudCV download is now gated on BOTH ENABLE_GOLDEN_RETRAIN OR
@@ -387,7 +387,7 @@ def nb_08a_kaggle():
         ("code", GOLDEN_KT_PHYS_CODE),
         ("code", GOLDEN_EXTENDED_CODE),
 
-        ("markdown", "## STAGE B — Image-feature pre-flight + extraction"),
+        ("markdown", "## STAGE B, Image-feature pre-flight + extraction"),
         # Fallback runs BEFORE LOAD_DATA so cov dim is consistent from the
         # very first load: and any stale zero-fill that would mismatch an
         # existing SDE ckpt's c_dim is deleted up front.
@@ -397,7 +397,7 @@ def nb_08a_kaggle():
         ("markdown", "## 2. Load data tensors"),
         ("code", LOAD_DATA_TOLERANT_CODE),
 
-        ("markdown", "## STAGE C — Train Latent Neural SDE (Mixture-of-OU, closed-form marginals, CTI-gated diffusion)"),
+        ("markdown", "## STAGE C, Train Latent Neural SDE (Mixture-of-OU, closed-form marginals, CTI-gated diffusion)"),
         # SolarSDE v2: replaces the SDE+score-decoder with a CTI-gated mixture
         # density network anchored on smart-persistence. Guaranteed >= persistence
         # by construction, calibrated PICP, trains in ~10 min on a T4.
@@ -405,10 +405,10 @@ def nb_08a_kaggle():
         ("code", STAGE_0_V2_CODE),
         ("code", safe_stage("POST_STAGE0_V2_VERIFY", POST_STAGE0_V2_VERIFY_CODE)),
 
-        ("markdown", "## STAGE CV — Leave-one-day-out cross-validation (reviewer requirement)"),
+        ("markdown", "## STAGE CV, Leave-one-day-out cross-validation (reviewer requirement)"),
         ("code", safe_stage("K_FOLD_CV", K_FOLD_CV_CODE)),
 
-        ("markdown", "## STAGE MS — Multi-site validation (SURFRAD + SKIPP'D + NSRDB)"),
+        ("markdown", "## STAGE MS, Multi-site validation (SURFRAD + SKIPP'D + NSRDB)"),
         # Three independent datasets covering 7 climate zones (SURFRAD), a
         # second sky-image site (SKIPP'D Stanford), and satellite-derived
         # benchmarks (NSRDB). Kills reviewer #2's "only 5 days, one site"
@@ -419,7 +419,7 @@ def nb_08a_kaggle():
         ("code", safe_stage("DOWNLOAD_NSRDB",   DOWNLOAD_NSRDB_CODE)),
         ("code", safe_stage("MULTISITE_EVAL",   MULTISITE_EVAL_CODE)),
 
-        ("markdown", "## Final — Zip Part 1 outputs to /kaggle/working/"),
+        ("markdown", "## Final, Zip Part 1 outputs to /kaggle/working/"),
         ("code", ZIP_DOWNLOAD_CODE),
     ]
     return build_nb(cells)
@@ -429,7 +429,7 @@ def nb_08b_kaggle():
     """Part 2: baselines + ablations + stats + figures + tables."""
     cells = [
         ("markdown", HEADER_08B_MD),
-        ("markdown", "## 0. Setup (Kaggle — Part 2)"),
+        ("markdown", "## 0. Setup (Kaggle, Part 2)"),
         ("code", KAGGLE_SETUP_PART2_CODE),
         ("code", FAST_START_KAGGLE_CODE),
         ("markdown", "## 0a. Preflight sanity check"),
@@ -443,52 +443,52 @@ def nb_08b_kaggle():
         ("markdown", "## 2. Load data tensors"),
         ("code", LOAD_DATA_TOLERANT_CODE),
 
-        ("markdown", "## STAGE C+ — Corrected inference (advance time-deterministic covariates)"),
+        ("markdown", "## STAGE C+, Corrected inference (advance time-deterministic covariates)"),
         ("code", safe_stage("CORRECTED_INFERENCE", CORRECTED_INFERENCE_CODE)),
 
-        ("markdown", "## STAGE D — Standard baselines (persistence, smart-pers, LSTM, MC-Dropout, CSDI)"),
+        ("markdown", "## STAGE D, Standard baselines (persistence, smart-pers, LSTM, MC-Dropout, CSDI)"),
         ("code", safe_stage("BASELINES", BASELINES_CODE)),
 
-        ("markdown", "## STAGE F — Ablations: v2-native (A2 no-CTI, A4 no-persistence, A5 no-SDE, A7 no-cov)"),
+        ("markdown", "## STAGE F, Ablations: v2-native (A2 no-CTI, A4 no-persistence, A5 no-SDE, A7 no-cov)"),
         ("code", safe_stage("ABLATIONS_V2", ABLATIONS_V2_CODE)),
         ("code", safe_stage("ABLATIONS", ABLATIONS_CODE)),
         ("code", safe_stage("EXTRA_ABLATIONS", EXTRA_ABLATIONS_CODE)),
 
-        ("markdown", "## STAGE G — Conformal calibration"),
+        ("markdown", "## STAGE G, Conformal calibration"),
         ("code", safe_stage("CALIBRATION", CALIBRATION_CODE)),
 
-        ("markdown", "## STAGE H — Stratified eval + Diebold-Mariano test"),
+        ("markdown", "## STAGE H, Stratified eval + Diebold-Mariano test"),
         ("code", safe_stage("STRATIFIED", STRATIFIED_CODE)),
 
-        ("markdown", "## STAGE I — PIT + reliability + sharpness + bootstrap CIs (all horizons)"),
+        ("markdown", "## STAGE I, PIT + reliability + sharpness + bootstrap CIs (all horizons)"),
         ("code", safe_stage("PIT_RELIABILITY", PIT_RELIABILITY_CODE)),
         ("code", safe_stage("BOOTSTRAP_CIS", BOOTSTRAP_CIS_CODE)),
 
-        ("markdown", "## STAGE I+ — Ramp detection AUROC + CTI lead-time"),
+        ("markdown", "## STAGE I+, Ramp detection AUROC + CTI lead-time"),
         ("code", safe_stage("RAMP_AUROC", RAMP_AUROC_CODE)),
 
-        ("markdown", "## STAGE I++ — CTI vs cloud-cover validation (physical-meaningfulness)"),
+        ("markdown", "## STAGE I++, CTI vs cloud-cover validation (physical-meaningfulness)"),
         ("code", safe_stage("CTI_VALIDATION", CTI_VALIDATION_CODE)),
 
-        ("markdown", "## STAGE I+++ — Holm-Bonferroni multiple-comparison correction"),
+        ("markdown", "## STAGE I+++, Holm-Bonferroni multiple-comparison correction"),
         ("code", safe_stage("HOLM_BONFERRONI", HOLM_BONFERRONI_CODE)),
 
-        ("markdown", "## STAGE K — Resource-cost simulation (CAISO reserves, USD/yr per GW)"),
+        ("markdown", "## STAGE K, Resource-cost simulation (CAISO reserves, USD/yr per GW)"),
         ("code", safe_stage("ECONOMIC_CAISO", ECONOMIC_CAISO_CODE)),
 
-        ("markdown", "## STAGE M — Analysis figures (CTI dynamics, regime, forecast traces)"),
+        ("markdown", "## STAGE M, Analysis figures (CTI dynamics, regime, forecast traces)"),
         ("code", safe_stage("ANALYSIS", ANALYSIS_CODE)),
 
-        ("markdown", "## STAGE N — LaTeX tables (3 paper-ready tables for Solar Energy)"),
+        ("markdown", "## STAGE N, LaTeX tables (3 paper-ready tables for Solar Energy)"),
         ("code", safe_stage("LATEX_TABLES", LATEX_TABLES_CODE)),
 
-        ("markdown", "## Final — Zip the paper package to /kaggle/working/"),
+        ("markdown", "## Final, Zip the paper package to /kaggle/working/"),
         ("code", ZIP_DOWNLOAD_CODE),
     ]
     return build_nb(cells)
 
 
-HEADER_08_COMBINED_MD = """# SolarSDE Master (Combined) — single Kaggle notebook end-to-end
+HEADER_08_COMBINED_MD = """# SolarSDE Master (Combined), single Kaggle notebook end-to-end
 
 This is the merger of `08a_master_part1_kaggle.ipynb` (data + VAE + STAGE 0 +
 5-fold CV) and `08b_master_part2_kaggle.ipynb` (baselines + ablations +
@@ -500,7 +500,7 @@ capped at 12 hours; T4-x2 at 9 hours.  Running everything end-to-end on a
 fresh notebook takes 9-14 h depending on the GPU, so you may still hit the
 wall.  Mitigations:
 
-1. Every stage auto-resumes from disk — if the kernel dies, re-run all cells
+1. Every stage auto-resumes from disk, if the kernel dies, re-run all cells
    and finished stages skip.  PERSIST_DIR lives at /kaggle/working/solarsde_outputs
    and is preserved between sessions when you Save Version → Save & Run All.
 2. To split into 2 sessions, run cells through STAGE CV first, Save Version,
@@ -529,7 +529,7 @@ def nb_08_kaggle_combined():
         ("markdown", "## 1. Shared model definitions"),
         ("code", SHARED_CODE),
 
-        ("markdown", "## RETRAIN — Golden CO (skipped if cached)"),
+        ("markdown", "## RETRAIN, Golden CO (skipped if cached)"),
         ("code", GOLDEN_RETRAIN_GUARD_CODE),
         ("code", "LATENT_DIM = 64\nIMG_SIZE = 128\n" + VAE_MODEL),
         ("code", _gate("(ENABLE_GOLDEN_RETRAIN or NEED_IMAGE_FEATURES) and not all((DATA_DIR / 'cloudcv' / f).exists() "
@@ -547,66 +547,66 @@ def nb_08_kaggle_combined():
         ("code", GOLDEN_KT_PHYS_CODE),
         ("code", GOLDEN_EXTENDED_CODE),
 
-        ("markdown", "## STAGE B — Image-feature pre-flight + extraction"),
+        ("markdown", "## STAGE B, Image-feature pre-flight + extraction"),
         ("code", STAGE_M1_SAFE_FALLBACK_CODE),
         ("code", STAGE_MINUS1_CODE),
 
         ("markdown", "## 2. Load data tensors"),
         ("code", LOAD_DATA_TOLERANT_CODE),
 
-        ("markdown", "## STAGE C — Train Latent Neural SDE (Mixture-of-OU, closed-form marginals, CTI-gated diffusion)"),
+        ("markdown", "## STAGE C, Train Latent Neural SDE (Mixture-of-OU, closed-form marginals, CTI-gated diffusion)"),
         ("code", MDN_ARCHITECTURE_CODE),
         ("code", STAGE_0_V2_CODE),
         ("code", safe_stage("POST_STAGE0_V2_VERIFY", POST_STAGE0_V2_VERIFY_CODE)),
 
-        ("markdown", "## STAGE CV — Leave-one-day-out cross-validation"),
+        ("markdown", "## STAGE CV, Leave-one-day-out cross-validation"),
         ("code", safe_stage("K_FOLD_CV", K_FOLD_CV_CODE)),
 
-        ("markdown", "## STAGE MS — Multi-site validation (SURFRAD + SKIPP'D + NSRDB)"),
+        ("markdown", "## STAGE MS, Multi-site validation (SURFRAD + SKIPP'D + NSRDB)"),
         ("code", safe_stage("DOWNLOAD_SURFRAD", DOWNLOAD_SURFRAD_CODE)),
         ("code", safe_stage("DOWNLOAD_SKIPPD",  DOWNLOAD_SKIPPD_CODE)),
         ("code", safe_stage("DOWNLOAD_NSRDB",   DOWNLOAD_NSRDB_CODE)),
         ("code", safe_stage("MULTISITE_EVAL",   MULTISITE_EVAL_CODE)),
 
-        ("markdown", "## STAGE C+ — Corrected inference (advance time-deterministic covariates)"),
+        ("markdown", "## STAGE C+, Corrected inference (advance time-deterministic covariates)"),
         ("code", safe_stage("CORRECTED_INFERENCE", CORRECTED_INFERENCE_CODE)),
 
-        ("markdown", "## STAGE D — Standard baselines (persistence, smart-pers, LSTM, MC-Dropout, CSDI)"),
+        ("markdown", "## STAGE D, Standard baselines (persistence, smart-pers, LSTM, MC-Dropout, CSDI)"),
         ("code", safe_stage("BASELINES", BASELINES_CODE)),
 
-        ("markdown", "## STAGE F — Ablations A2 (no-CTI), A3 (no-VAE PCA), A4 (no-score), A5 (no-SDE/ODE)"),
+        ("markdown", "## STAGE F, Ablations A2 (no-CTI), A3 (no-VAE PCA), A4 (no-score), A5 (no-SDE/ODE)"),
         ("code", safe_stage("ABLATIONS", ABLATIONS_CODE)),
         ("code", safe_stage("EXTRA_ABLATIONS", EXTRA_ABLATIONS_CODE)),
 
-        ("markdown", "## STAGE G — Conformal calibration"),
+        ("markdown", "## STAGE G, Conformal calibration"),
         ("code", safe_stage("CALIBRATION", CALIBRATION_CODE)),
 
-        ("markdown", "## STAGE H — Stratified eval + Diebold-Mariano test"),
+        ("markdown", "## STAGE H, Stratified eval + Diebold-Mariano test"),
         ("code", safe_stage("STRATIFIED", STRATIFIED_CODE)),
 
-        ("markdown", "## STAGE I — PIT + reliability + sharpness + bootstrap CIs"),
+        ("markdown", "## STAGE I, PIT + reliability + sharpness + bootstrap CIs"),
         ("code", safe_stage("PIT_RELIABILITY", PIT_RELIABILITY_CODE)),
         ("code", safe_stage("BOOTSTRAP_CIS", BOOTSTRAP_CIS_CODE)),
 
-        ("markdown", "## STAGE I+ — Ramp detection AUROC + CTI lead-time"),
+        ("markdown", "## STAGE I+, Ramp detection AUROC + CTI lead-time"),
         ("code", safe_stage("RAMP_AUROC", RAMP_AUROC_CODE)),
 
-        ("markdown", "## STAGE I++ — CTI vs cloud-cover validation"),
+        ("markdown", "## STAGE I++, CTI vs cloud-cover validation"),
         ("code", safe_stage("CTI_VALIDATION", CTI_VALIDATION_CODE)),
 
-        ("markdown", "## STAGE I+++ — Holm-Bonferroni multiple-comparison correction"),
+        ("markdown", "## STAGE I+++, Holm-Bonferroni multiple-comparison correction"),
         ("code", safe_stage("HOLM_BONFERRONI", HOLM_BONFERRONI_CODE)),
 
-        ("markdown", "## STAGE K — CAISO economic value (USD/yr per GW)"),
+        ("markdown", "## STAGE K, CAISO economic value (USD/yr per GW)"),
         ("code", safe_stage("ECONOMIC_CAISO", ECONOMIC_CAISO_CODE)),
 
-        ("markdown", "## STAGE M — Analysis figures (CTI dynamics, regime, forecast traces)"),
+        ("markdown", "## STAGE M, Analysis figures (CTI dynamics, regime, forecast traces)"),
         ("code", safe_stage("ANALYSIS", ANALYSIS_CODE)),
 
-        ("markdown", "## STAGE N — LaTeX tables (3 paper-ready tables for Solar Energy)"),
+        ("markdown", "## STAGE N, LaTeX tables (3 paper-ready tables for Solar Energy)"),
         ("code", safe_stage("LATEX_TABLES", LATEX_TABLES_CODE)),
 
-        ("markdown", "## Final — Zip the paper package to /kaggle/working/"),
+        ("markdown", "## Final, Zip the paper package to /kaggle/working/"),
         ("code", ZIP_DOWNLOAD_CODE),
     ]
     return build_nb(cells)

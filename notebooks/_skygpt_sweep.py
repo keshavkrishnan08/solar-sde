@@ -36,7 +36,7 @@ imgs_log = _hf["test/images_log"][:]; pv_log = _hf["test/pv_log"][:].astype(np.f
 pv_pred = _hf["test/pv_pred"][:].astype(np.float32)
 sky_times = np.load(SKYGPT_DIR / "times_curr_test_2019nov_dec.npy", allow_pickle=True)
 N_SKY = len(sky_times)
-print("=" * 70); print(f"SkyGPT SWEEP — {N_SKY} cloudy windows"); print("=" * 70)
+print("=" * 70); print(f"SkyGPT SWEEP, {N_SKY} cloudy windows"); print("=" * 70)
 
 # clear-sky lookup
 if "SKIPPD_ENV" in globals(): _ENV = SKIPPD_ENV
@@ -210,14 +210,14 @@ print(f"  -> SkyGPT test {tcol} = {val_best[tcol]:.3f} kW   (SkyGPT published = 
 if val_best[tcol] < 2.81:
     print(f"  >>> BEATS SkyGPT (val-selected, legitimate): {val_best[tcol]:.3f} < 2.81 <<<")
 else:
-    print(f"  val-selected is {100*(val_best[tcol]-2.81)/2.81:+.1f}% vs SkyGPT — full band:")
+    print(f"  val-selected is {100*(val_best[tcol]-2.81)/2.81:+.1f}% vs SkyGPT, full band:")
     print("    "+"  ".join(f"h{h}={val_best[f'TEST_crps_h{h}']:.2f}" for h in H_LIST))
 
-# (2) DIAGNOSTIC ONLY: the test-tuned oracle (upper bound — NOT a reportable result)
+# (2) DIAGNOSTIC ONLY: the test-tuned oracle (upper bound, NOT a reportable result)
 orc=sweep.sort_values(tcol).iloc[0]
-print(f"\\n[DIAGNOSTIC — test-tuned oracle, NOT reportable] best possible {tcol}={orc[tcol]:.3f} "
+print(f"\\n[DIAGNOSTIC, test-tuned oracle, NOT reportable] best possible {tcol}={orc[tcol]:.3f} "
       f"at n={int(orc.n_samples)} scale={orc.std_scale} blend={orc.blend}")
-print(f"  (headroom: {orc[tcol]:.3f} vs val-selected {val_best[tcol]:.3f} — shows whether a cloudy-tuned "
+print(f"  (headroom: {orc[tcol]:.3f} vs val-selected {val_best[tcol]:.3f}, shows whether a cloudy-tuned "
       f"recipe COULD help, but selecting on test is cherry-picking.)")
 print("  -> saved skygpt_sweep_results.csv")
 del _vae, _sde; gc.collect()
@@ -234,7 +234,7 @@ DEEP_ENSEMBLE_CODE = '''\
 # ==== Deep ensemble: K closed-form models, different seeds, pooled samples ====
 K = int(globals().get("SEED_ENSEMBLE", 1))
 if K <= 1:
-    print("[SKIP] SEED_ENSEMBLE=1 — single model (set >1 for a deep ensemble).")
+    print("[SKIP] SEED_ENSEMBLE=1, single model (set >1 for a deep ensemble).")
     ENSEMBLE_CKPTS = [CHECKPOINT_DIR / "mdn_v2_best.pt"]
 else:
     print("=" * 70); print(f"DEEP ENSEMBLE: training {K} closed-form members"); print("=" * 70)
@@ -260,7 +260,7 @@ else:
             _sh.copy(CHECKPOINT_DIR / "mdn_v2_best.pt", _mk); ENSEMBLE_CKPTS.append(_mk)
             print(f"  member {_k} trained -> {_mk.name}")
         except Exception as _e:
-            print(f"  member {_k} failed: {_e} — continuing with {len(ENSEMBLE_CKPTS)} members")
+            print(f"  member {_k} failed: {_e}, continuing with {len(ENSEMBLE_CKPTS)} members")
     # restore member 0 as the canonical model for the sweep's single-model path
     _sh.copy(ENSEMBLE_CKPTS[0], CHECKPOINT_DIR / "mdn_v2_best.pt")
     print(f"\\n  ensemble ready: {len(ENSEMBLE_CKPTS)} members")
